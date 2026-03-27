@@ -2,27 +2,30 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import MenuIcon from "@/public/icons/menu.svg";
-import CloseIcon from "@/public/icons/close.svg";
-import HeartIcon from "@/public/icons/heart.svg";
-import MessageIcon from "@/public/icons/message.svg";
-import AddIcon from "@/public/icons/add.svg";
 import { useState } from "react";
+
+import menuIcon from "@/../public/images/icons/menu.svg";
+import closeIcon from "@/../public/images/icons/close.svg";
+import heartIcon from "@/../public/images/icons/heart.svg";
+import messageIcon from "@/../public/images/icons/message.svg";
+import addIcon from "@/../public/images/icons/add.svg";
+
+import logo from "@/../public/images/Logo-kasa.png";
+import picto from "@/../public/images/Picto-kasa.png";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="w-full flex justify-center py-4">
+    <header className="w-full flex justify-center py-4 relative">
       <div className="w-[782px] h-[56px] bg-white rounded-[10px] shadow flex items-center justify-between px-4">
         
         {/* Mobile left icon */}
         <div className="md:hidden">
           <Image
-            src="/images/picto-kasa.png"
+            src={picto}
             alt="Kasa"
-            width={32}
-            height={32}
+            className="w-10 h-10"
           />
         </div>
 
@@ -35,26 +38,25 @@ export default function Header() {
         {/* Logo center */}
         <div className="hidden md:block">
           <Image
-            src="/images/logo-kasa.png"
+            src={logo}
             alt="Logo Kasa"
-            width={120}
-            height={40}
+            className="w-30 h-10"
           />
         </div>
 
         {/* Desktop right actions */}
         <div className="hidden md:flex items-center gap-4">
           <Link href="/add-property" className="flex items-center gap-2 text-main-red font-semibold">
-            <AddIcon className="w-5 h-5 text-main-red" />
+            <Image src={addIcon} alt="Ajouter" className="w-5 h-5" />
             Ajouter un logement
           </Link>
 
           <Link href="/favorites">
-            <HeartIcon className="w-6 h-6 text-black hover:text-main-red" />
+            <Image src={heartIcon} alt="Favoris" className="w-6 h-6" />
           </Link>
 
           <Link href="/messaging">
-            <MessageIcon className="w-6 h-6 text-black hover:text-main-red" />
+            <Image src={messageIcon} alt="Messages" className="w-6 h-6" />
           </Link>
         </div>
 
@@ -65,9 +67,9 @@ export default function Header() {
           aria-label="Menu"
         >
           {open ? (
-            <CloseIcon className="w-7 h-7 text-black" />
+            <Image src={closeIcon} alt="Fermer" className="w-5 h-5" />
           ) : (
-            <MenuIcon className="w-7 h-7 text-black" />
+            <Image src={menuIcon} alt="Menu" className="w-5 h-5" />
           )}
         </button>
       </div>
