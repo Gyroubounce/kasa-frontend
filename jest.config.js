@@ -7,8 +7,9 @@ const config = {
     "^next/image$": "<rootDir>/__mocks__/next/image.js",
   },
   transform: {
-     "^.+\\.(ts|tsx|js|jsx)$": "babel-jest"
-  },
+  "^.+\\.(ts|tsx|js|jsx)$": ["babel-jest", { configFile: "./babel-jest.config.js" }]
+}
+
 };
 
 module.exports = config;
