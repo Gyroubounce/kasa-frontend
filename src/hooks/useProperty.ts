@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { getPropertyById } from "@/lib/api/properties";
-import { Property } from "@/types/property";
+import { getPropertyDetail } from "@/lib/api/properties";
+import { PropertyDetail } from "@/types/property";
 
 export function useProperty(id: string) {
-  const [data, setData] = useState<Property | null>(null);
+  const [data, setData] = useState<PropertyDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getPropertyById(id)
+    getPropertyDetail(id)
       .then(setData)
       .finally(() => setLoading(false));
   }, [id]);

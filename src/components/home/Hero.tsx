@@ -3,18 +3,30 @@ import banner from "@/../public/images/hero-home.png";
 
 export default function Hero() {
   return (
-    <section className="relative w-full h-[220px] md:h-[300px] rounded-xl overflow-hidden mb-10">
-      <Image
-        src={banner}
-        alt="Bannière Kasa"
-        fill
-        className="object-cover brightness-75"
-        priority
-      />
-
-      <h1 className="absolute inset-0 flex items-center justify-center text-white text-2xl md:text-4xl font-semibold px-4 text-center">
+    <section
+      className="w-[1440px] flex flex-col items-center mt-10"
+      aria-labelledby="hero-title"
+    >
+      <h1
+        id="hero-title"
+        className="text-main-red text-4xl font-semibold text-center"
+      >
         Chez vous, partout et ailleurs
       </h1>
+
+      <p className="text-[14px] text-black mt-2 text-center max-w-[600px]">
+        Trouvez le logement idéal pour vos prochaines aventures
+      </p>
+
+      <div className="relative w-[1115px] h-[458px] mt-8">
+        <Image
+          src={banner}
+          alt="Illustration d’un paysage accueillant représentant le confort et le voyage"
+          fill
+          className="object-cover rounded-[20px]"
+          priority
+        />
+      </div>
     </section>
   );
 }

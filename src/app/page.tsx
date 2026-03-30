@@ -1,32 +1,27 @@
 import Hero from "@/components/home/Hero";
-import PropertyCard from "@/components/home/PropertyCard";
-import { getAllProperties } from "@/lib/api/properties";
+import PropertyList from "@/components/home/PropertyList";
+import HowItWorks from "@/components/home/HowItWorks";
 
-export default async function HomePage() {
-  let properties = [];
-
-  try {
-    properties = await getAllProperties();
-  } catch (err) {
-    return (
-      <main className="max-w-[1240px] mx-auto px-4 py-10">
-        <Hero />
-        <p className="text-center text-main-red text-lg mt-10">
-          Impossible de charger les logements.
-        </p>
-      </main>
-    );
-  }
-
+export default function HomePage() {
   return (
-    <main className="max-w-[1240px] mx-auto px-4 py-10">
+    <main
+      className="w-full flex flex-col items-center bg-light-orange"
+      aria-label="Page d’accueil de Kasa"
+    >
       <Hero />
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-10">
-        {properties.map((property) => (
-          <PropertyCard key={property.id} property={property} />
-        ))}
+      <section
+        className="w-[1115px] mt-16"
+        aria-labelledby="properties-title"
+      >
+        <h2 id="properties-title" className="sr-only">
+          Liste des logements disponibles
+        </h2>
+
+        <PropertyList columns={3} />
       </section>
+
+      <HowItWorks />
     </main>
   );
 }

@@ -1,12 +1,49 @@
 import { API_URL } from "@/lib/env";
 import { apiFetch } from "@/lib/utils/fetcher";
-import { Property } from "@/types/property";
 
+import { 
+  PropertyBase, 
+  PropertyDetail, 
+  PropertyCreate, 
+  PropertyUpdate 
+} from "@/types/property";
 
-export async function getAllProperties(): Promise<Property[]> {
-  return apiFetch<Property[]>(`${API_URL}/properties`);
+/* ----------------------------------------------------
+ * GET — Liste des propriétés (PropertyBase[])
+ * ---------------------------------------------------- */
+export async function getPropertyBase(): Promise<PropertyBase[]> {
+  return apiFetch<PropertyBase[]>(`${API_URL}/properties`);
 }
 
-export async function getPropertyById(id: string): Promise<Property> {
-  return apiFetch<Property>(`${API_URL}/properties/${id}`);
+/* ----------------------------------------------------
+ * GET — Détail d'une propriété (PropertyDetail)
+ * ---------------------------------------------------- */
+export async function getPropertyDetail(id: string): Promise<PropertyDetail> {
+  return apiFetch<PropertyDetail>(`${API_URL}/properties/${id}`);
+}
+
+/* ----------------------------------------------------
+ * POST — Création d'une propriété (PropertyCreate)
+ * ---------------------------------------------------- */
+export async function createProperty(
+  data: PropertyCreate
+): Promise<PropertyDetail> {
+  return apiFetch<PropertyDetail>(`${API_URL}/properties`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+
+/* ----------------------------------------------------
+ * PATCH — Mise à jour d'une propriété (PropertyUpdate)
+ * ---------------------------------------------------- */
+export async function updateProperty(
+  id: string,
+  data: PropertyUpdate
+): Promise<PropertyDetail> {
+  return apiFetch<PropertyDetail>(`${API_URL}/properties/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
 }

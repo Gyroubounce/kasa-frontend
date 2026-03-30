@@ -1,12 +1,13 @@
 import { API_URL } from "@/lib/env";
 import { apiFetch } from "@/lib/utils/fetcher";
+import { Rating, RatingCreate } from "@/types/Rating";
 
 export async function rateProperty(
   propertyId: string,
-  rating: number
-): Promise<{ success: boolean }> {
-  return apiFetch(`${API_URL}/ratings`, {
+  payload: RatingCreate
+): Promise<Rating> {
+  return apiFetch<Rating>(`${API_URL}/properties/${propertyId}/ratings`, {
     method: "POST",
-    body: JSON.stringify({ propertyId, rating }),
+    body: JSON.stringify(payload),
   });
 }

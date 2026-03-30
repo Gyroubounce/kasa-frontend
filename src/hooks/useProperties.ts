@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { getAllProperties } from "@/lib/api/properties";
-import { Property } from "@/types/property";
+import { getPropertyBase } from "@/lib/api/properties";
+import { PropertyBase } from "@/types/property";
 
 export function useProperties() {
-  const [data, setData] = useState<Property[]>([]);
+  const [data, setData] = useState<PropertyBase[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllProperties()
+    getPropertyBase()
       .then(setData)
       .finally(() => setLoading(false));
   }, []);
