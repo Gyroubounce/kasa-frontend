@@ -13,7 +13,7 @@ export default function Carousel({ pictures }: CarouselProps) {
   // Cas : aucune image
   if (!pictures || pictures.length === 0) {
     return (
-      <div className="w-full h-[358px] md:h-[540px] bg-gray-200 rounded-[10px]" />
+      <div  data-testid="placeholder" className="w-full h-[358px] md:h-[540px] bg-gray-200 rounded-[10px]" />
     );
   }
 
