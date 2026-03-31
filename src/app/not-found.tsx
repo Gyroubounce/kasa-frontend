@@ -2,21 +2,41 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <main className="flex flex-col items-center justify-center text-center py-20 px-4">
-      <h1 className="text-main-red font-bold text-8xl md:text-[200px] leading-none">
-        404
-      </h1>
+    <main className="w-full flex justify-center items-center py-20">
+      <div className="w-[342px] h-[343px] flex flex-col items-center text-center">
 
-      <p className="text-gray-dark text-lg md:text-2xl mt-6">
-        Oups! La page que vous demandez n&apos;existe pas.
-      </p>
+        {/* 404 */}
+        <h1 className="text-[100px] font-black text-main-red leading-none">
+          404
+        </h1>
 
-      <Link
-        href="/"
-        className="mt-10 text-main-red underline text-base md:text-lg hover:opacity-80 transition"
-      >
-        Retourner sur la page d’accueil
-      </Link>
+        {/* TEXTE */}
+        <p className="mt-4 text-[14px] font-normal text-black leading-relaxed">
+          Il semble que la page que vous cherchez ait pris des vacances…<br />
+          ou n’ait jamais existé.
+        </p>
+
+        {/* BOUTONS */}
+        <div className="mt-8 flex flex-col gap-4 w-full items-center">
+
+          {/* BTN ACCUEIL */}
+          <Link
+            href="/"
+            className="w-[200px] h-[38px] bg-main-red text-white text-[14px] font-medium rounded-[10px] flex items-center justify-center"
+          >
+            Accueil
+          </Link>
+
+          {/* BTN LOGEMENTS */}
+          <Link
+            href="/properties"
+            className="w-[200px] h-[38px] border border-main-red text-main-red text-[14px] font-medium rounded-[10px] flex items-center justify-center"
+          >
+            Logements
+          </Link>
+
+        </div>
+      </div>
     </main>
   );
 }

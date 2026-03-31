@@ -3,9 +3,17 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
-    domains: [
-      "kasa-backend-production-1060.up.railway.app",
-      "s3-eu-west-1.amazonaws.com"
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "kasa-backend-production-1060.up.railway.app",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "s3-eu-west-1.amazonaws.com",
+        pathname: "/course.oc-static.com/**",
+      },
     ],
   },
 };
