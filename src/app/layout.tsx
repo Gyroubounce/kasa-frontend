@@ -28,7 +28,8 @@ export default function RootLayout({
 
           <Header />
 
-          <main id="main" className="min-h-screen pt-6">
+          <main id="main" className="flex flex-col items-center bg-light-orange"
+          aria-label="Page d’accueil de Kasa">
             {children}
           </main>
 

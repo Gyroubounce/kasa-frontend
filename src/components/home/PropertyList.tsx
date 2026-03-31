@@ -2,11 +2,10 @@ import PropertyCard from "@/components/properties/PropertyCard";
 import { getPropertyBase } from "@/lib/api/properties";
 import { PropertyBase } from "@/types/property";
 
-interface PropertyListProps {
-  columns?: number;
-}
 
-export default async function PropertyList({ columns = 3 }: PropertyListProps) {
+export default async function PropertyList() {
+ 
+  
   let properties: PropertyBase[] = [];
 
   try {
@@ -21,7 +20,7 @@ export default async function PropertyList({ columns = 3 }: PropertyListProps) {
 
   return (
     <section
-      className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${columns} gap-6 mt-10`}
+        className="flex flex-wrap justify-center gap-6 mt-10  max-w-[1115px] mx-auto"
       aria-label="Liste des logements disponibles"
     >
       {properties.map((property) => (
