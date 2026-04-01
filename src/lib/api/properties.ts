@@ -12,14 +12,14 @@ import {
  * GET — Liste des propriétés (PropertyBase[])
  * ---------------------------------------------------- */
 export async function getPropertyBase(): Promise<PropertyBase[]> {
-  return apiFetch<PropertyBase[]>(`${API_URL}/properties`);
+  return apiFetch<PropertyBase[]>(`${API_URL}/api/properties`);
 }
 
 /* ----------------------------------------------------
  * GET — Détail d'une propriété (PropertyDetail)
  * ---------------------------------------------------- */
 export async function getPropertyDetail(id: string): Promise<PropertyDetail> {
-  return apiFetch<PropertyDetail>(`${API_URL}/properties/${id}`);
+  return apiFetch<PropertyDetail>(`${API_URL}/api/properties/${id}`);
 }
 
 /* ----------------------------------------------------
@@ -28,7 +28,7 @@ export async function getPropertyDetail(id: string): Promise<PropertyDetail> {
 export async function createProperty(
   data: PropertyCreate
 ): Promise<PropertyDetail> {
-  return apiFetch<PropertyDetail>(`${API_URL}/properties`, {
+  return apiFetch<PropertyDetail>(`${API_URL}api//properties`, {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -42,7 +42,7 @@ export async function updateProperty(
   id: string,
   data: PropertyUpdate
 ): Promise<PropertyDetail> {
-  return apiFetch<PropertyDetail>(`${API_URL}/properties/${id}`, {
+  return apiFetch<PropertyDetail>(`${API_URL}/api/properties/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });

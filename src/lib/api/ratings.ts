@@ -6,7 +6,7 @@ export async function rateProperty(
   propertyId: string,
   payload: RatingCreate
 ): Promise<Rating> {
-  return apiFetch<Rating>(`${API_URL}/properties/${propertyId}/ratings`, {
+  return apiFetch<Rating>(`${API_URL}/api/properties/${propertyId}/ratings`, {
     method: "POST",
     body: JSON.stringify(payload),
   });
