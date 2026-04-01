@@ -28,7 +28,7 @@ export async function getPropertyDetail(id: string): Promise<PropertyDetail> {
 export async function createProperty(
   data: PropertyCreate
 ): Promise<PropertyDetail> {
-  return apiFetch<PropertyDetail>(`${API_URL}api//properties`, {
+  return apiFetch<PropertyDetail>(`${API_URL}/api//properties`, {
     method: "POST",
     body: JSON.stringify(data),
   });
