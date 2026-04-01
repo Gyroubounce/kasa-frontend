@@ -21,7 +21,7 @@ export default function LoginForm() {
 
     try {
       await login(email, password);
-      router.push("/");
+      router.push("/messaging");
     } catch {
       setSubmitting(false);
     }
