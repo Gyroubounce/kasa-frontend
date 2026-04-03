@@ -24,19 +24,6 @@ export interface PropertyBase {
 }
 
 // --- DETAIL ---
-export interface PropertyBase {
-  id: string;
-  slug: string;
-  title: string;
-  description?: string;
-  cover: string;
-  location: string;
-  price_per_night: number;
-  rating_avg: number;
-  ratings_count: number;
-  host: PropertyHost;
-}
-
 export interface PropertyDetail {
   id: string;
   slug: string;
@@ -61,7 +48,7 @@ export interface PropertyCreate {
   title: string;
   description?: string;
   cover?: string;
-  location?: string;
+  location: string;
   price_per_night: number;
   host_id: string;
   host?: PropertyHost;

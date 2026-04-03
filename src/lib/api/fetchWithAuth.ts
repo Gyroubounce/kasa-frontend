@@ -15,6 +15,7 @@ export async function fetchWithAuth(
   const res = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,
+    credentials: "include", // 🔥 OBLIGATOIRE POUR ENVOYER LES COOKIES
   });
 
   if (!res.ok) {

@@ -13,8 +13,19 @@ import addIcon from "@/../public/images/icons/add.svg";
 import logo from "@/../public/images/Logo-kasa.png";
 import picto from "@/../public/images/Picto-kasa.png";
 
+import { useAuthContext } from "@/context/AuthContext";
+import { useFavoritesContext } from "@/context/FavoritesContext";
+import { useMessaging } from "@/context/MessagingContext"; 
+
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const { user } = useAuthContext();
+
+  const favoritesCtx = useFavoritesContext();
+  const favoritesCount = favoritesCtx?.favorites.length ?? 0;
+
+  const messagingCtx = useMessaging?.();
+  const unreadCount = messagingCtx?.unreadCount ?? 0;
 
   return (
     <header className="w-full flex justify-center py-4 relative">
@@ -22,11 +33,7 @@ export default function Header() {
         
         {/* Mobile left icon */}
         <div className="md:hidden">
-          <Image
-            src={picto}
-            alt="Kasa"
-            className="w-10 h-10"
-          />
+          <Image src={picto} alt="Kasa" className="w-10 h-10" />
         </div>
 
         {/* Desktop navigation left */}
@@ -37,26 +44,36 @@ export default function Header() {
 
         {/* Logo center */}
         <div className="hidden md:block">
-          <Image
-            src={logo}
-            alt="Logo Kasa"
-            className="w-30 h-10"
-          />
+          <Image src={logo} alt="Logo Kasa" className="w-30 h-10" />
         </div>
 
         {/* Desktop right actions */}
         <div className="hidden md:flex items-center gap-4">
+          {user && <p>Bonjour {user.name}</p>}
+
           <Link href="/add-property" className="flex items-center gap-2 text-main-red font-semibold">
             <Image src={addIcon} alt="Ajouter" className="w-5 h-5" />
             Ajouter un logement
           </Link>
 
-          <Link href="/favorites">
+          {/* Favoris + compteur */}
+          <Link href="/favorites" className="relative">
             <Image src={heartIcon} alt="Favoris" className="w-6 h-6" />
+            {user && favoritesCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-main-red text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {favoritesCount}
+              </span>
+            )}
           </Link>
 
-          <Link href="/messaging">
+          {/* Messages + compteur */}
+          <Link href="/messaging" className="relative">
             <Image src={messageIcon} alt="Messages" className="w-6 h-6" />
+            {user && unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-main-red text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
           </Link>
         </div>
 

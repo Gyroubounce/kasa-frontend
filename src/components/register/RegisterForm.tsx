@@ -56,6 +56,7 @@ export default function RegisterForm() {
           type="text"
           placeholder="Votre nom"
           className="w-full h-[40px] border border-gray-300 rounded-[8px] px-3 text-[14px]"
+          required
         />
       </div>
 
@@ -70,6 +71,7 @@ export default function RegisterForm() {
           type="text"
           placeholder="Votre prénom"
           className="w-full h-[40px] border border-gray-300 rounded-[8px] px-3 text-[14px]"
+          required
         />
       </div>
 
@@ -84,6 +86,7 @@ export default function RegisterForm() {
           type="email"
           placeholder="Votre email"
           className="w-full h-[40px] border border-gray-300 rounded-[8px] px-3 text-[14px]"
+          required
         />
       </div>
 
@@ -98,6 +101,8 @@ export default function RegisterForm() {
           type="password"
           placeholder="Votre mot de passe"
           className="w-full h-[40px] border border-gray-300 rounded-[8px] px-3 text-[14px]"
+          required
+        
         />
       </div>
 
@@ -106,6 +111,7 @@ export default function RegisterForm() {
         <input
           type="checkbox"
           className="w-[16px] h-[16px] accent-main-red"
+          required
         />
         J’accepte les conditions générales d’utilisation
       </label>
