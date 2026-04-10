@@ -22,13 +22,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className={`${inter.variable}`}>
-      <body>
+      <body className="min-h-screen flex flex-col ">
         <Providers>
           <a href="#main" className="skip-link">Aller au contenu</a>
 
           <Header />
 
-          <main id="main" className="flex flex-col items-center bg-light-orange"
+          <main id="main" className="flex-1 flex flex-col items-center bg-light-orange"
           aria-label="Page d’accueil de Kasa">
             {children}
           </main>

@@ -15,7 +15,10 @@ export default function HomePage() {
           Liste des logements disponibles
         </h2>
 
-        <PropertyList />
+        <div className="max-w-278.75 mx-auto">
+          <PropertyList />
+        </div>
+
       </section>
 
       <HowItWorks />

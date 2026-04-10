@@ -2,20 +2,20 @@ import RegisterForm from "@/components/register/RegisterForm";
 
 export default function RegisterPage() {
   return (
-    <main className="w-full flex justify-center items-center py-20">
-      <div className="w-[742px] h-[797px] bg-white rounded-[20px] shadow-md flex flex-col items-center px-10 py-12 text-center">
+    <section className="w-full flex justify-center items-center pt-8 ">
+      <div className="w-89.5 md:w-185.5 bg-white rounded-20 border border-gray-light flex flex-col items-center px-4 md:px-10 pt-9 pb-6 md:pt-20 md:pb-10 text-center">
 
-        <h1 className="text-[32px] font-bold text-main-red">
-          Rejoignez la communauté Kasa
+        <h1 className="text-[24px]  md:text-[32px] font-bold text-main-red">
+          Rejoignez la <br className="block md:hidden" /> communauté Kasa
         </h1>
 
-        <p className="mt-4 text-[14px] text-black font-normal leading-relaxed max-w-[550px]">
+        <p className="w-89.5 md:w-122 mt-2 text-[14px] text-black font-normal leading-[1.4]  max-w-137.5">
           Créez votre compte et commencez à voyager autrement : réservez des logements uniques,
-          découvrez de nouvelles destinations et partagez vos propres lieux avec d’autres voyageurs.
+          découvrez de nouvelles destinations et partagez <br className="block md:hidden" /> vos propres lieux avec d’autres voyageurs.
         </p>
 
         <RegisterForm />
       </div>
-    </main>
+    </section>
   );
 }

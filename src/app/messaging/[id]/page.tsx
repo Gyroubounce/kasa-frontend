@@ -1,11 +1,12 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import { useAuthContext } from "@/context/AuthContext"
+import { useParams } from "next/navigation";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useIsMounted } from "@/hooks/useIsMounted";
 
-import Image from "next/image";
-import ArrowLeftIcon from "@/../public/images/icons/back.svg";
+
 
 import ThreadList from "@/components/messaging/ThreadList";
 import Conversation from "@/components/messaging/Conversation";
@@ -13,17 +14,25 @@ import { BackButton } from "@/components/messaging/BackButton";
 
 export default function ConversationPage() {
   const { id } = useParams();
-  const router = useRouter();
-
+  const { user, loading: authLoading } = useAuthContext();
   const isMobile = useMediaQuery("(max-width: 1024px)");
   const mounted = useIsMounted();
 
+    if (authLoading) {
+    return null;
+  }
+
+  if (!user) {
+    redirect("/login");
+  }
+
   return (
-    <main className="flex w-full max-w-[1059px] mx-auto gap-6 h-[calc(100vh-150px)]">
+    <article className="flex w-full max-w-97.5 md:max-w-264.75 mx-auto gap-6 h-[calc(100vh-150px)] mt-8">
 
       {/* LEFT COLUMN — always rendered, hidden on mobile */}
-      <div className="hidden lg:flex w-[376px] flex-col gap-6 overflow-y-auto">
-        <BackButton to="/" />
+      
+      <div className="hidden lg:flex w-94 flex-col gap-6 overflow-y-auto">
+        <BackButton to="/" label="Retour" />
         <h1 className="text-[32px] font-medium">Messages</h1>
         <ThreadList />
       </div>
@@ -33,17 +42,11 @@ export default function ConversationPage() {
 
         {/* MOBILE HEADER — only visible on mobile */}
         {mounted && isMobile && (
-          <button
-            onClick={() => router.push("/messaging")}
-            className="flex items-center gap-2 text-gray-700 text-[14px] font-medium"
-          >
-            <Image src={ArrowLeftIcon} alt="Retour" className="w-[8px] h-auto" />
-            Retour
-          </button>
+          <BackButton to="/" label="Retour" />
         )}
 
         <Conversation threadId={id as string} />
       </div>
-    </main>
+    </article>
   );
 }

@@ -20,7 +20,7 @@ export default async function PropertyList() {
 
   return (
     <section
-        className="flex flex-wrap justify-center gap-6 mt-10  max-w-[1115px] mx-auto"
+        className="flex flex-wrap justify-start gap-6 mt-10 max-w-88.75 lg:max-w-278.75 md:max-w-183.5 mx-auto"
       aria-label="Liste des logements disponibles"
     >
       {properties.map((property) => (

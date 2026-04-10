@@ -3,6 +3,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { login as apiLogin, register as apiRegister } from "@/lib/api/auth";
 import type { AuthUser, AuthResponse } from "@/types/auth";
+import { useRouter } from "next/navigation";
+
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -16,6 +18,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,13 +83,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  /* -------------------------------------------------------
-     LOGOUT
-  -------------------------------------------------------- */
+/* -------------------------------------------------------
+   LOGOUT
+-------------------------------------------------------- */
   function logout() {
     localStorage.removeItem("kasa_user");
     localStorage.removeItem("kasa_token");
     setUser(null);
+    router.push("/login");
   }
 
   return (

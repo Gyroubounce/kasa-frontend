@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <main className="w-full flex justify-center items-center py-20">
-      <div className="w-[342px] h-[343px] flex flex-col items-center text-center">
+    <article className="w-full flex justify-center items-center py-20">
+      <div className="w-85.75 h-85.75 flex flex-col items-center text-center">
 
         {/* 404 */}
         <h1 className="text-[100px] font-black text-main-red leading-none">
@@ -22,7 +22,7 @@ export default function NotFound() {
           {/* BTN ACCUEIL */}
           <Link
             href="/"
-            className="w-[200px] h-[38px] bg-main-red text-white text-[14px] font-medium rounded-[10px] flex items-center justify-center"
+            className="w-50 h-9.5 bg-main-red text-white text-[14px] font-medium rounded-10 flex items-center justify-center"
           >
             Accueil
           </Link>
@@ -30,13 +30,13 @@ export default function NotFound() {
           {/* BTN LOGEMENTS */}
           <Link
             href="/properties"
-            className="w-[200px] h-[38px] border border-main-red text-main-red text-[14px] font-medium rounded-[10px] flex items-center justify-center"
+            className="w-50 h-9.5 border border-main-red text-main-red text-[14px] font-medium rounded-10 flex items-center justify-center"
           >
             Logements
           </Link>
 
         </div>
       </div>
-    </main>
+    </article>
   );
 }

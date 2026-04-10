@@ -46,13 +46,13 @@ export default function PropertyEquipments() {
   return (
     <section
       aria-labelledby="equipments-title"
-      className="w-[576px] flex flex-col gap-6"
+      className=" w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 gap-4 px-4 py-8 lg:px-24 lg:py-20"
     >
       <h2 id="equipments-title" className="text-[14px] font-medium text-black">
         Équipements
       </h2>
 
-      <fieldset className="flex gap-10" aria-describedby="equipments-help">
+      <fieldset className="flex gap-10 lg:gap-30" aria-describedby="equipments-help">
         <legend className="sr-only">Liste des équipements disponibles</legend>
 
         {/* COLONNE 1 */}
@@ -65,7 +65,7 @@ export default function PropertyEquipments() {
                 value={item}
                 checked={selected.includes(item)}
                 onChange={() => toggleEquipment(item)}
-                className="w-[12px] h-[12px]"
+                className="w-3 h-3"
               />
               {item}
             </label>
@@ -82,7 +82,7 @@ export default function PropertyEquipments() {
                 value={item}
                 checked={selected.includes(item)}
                 onChange={() => toggleEquipment(item)}
-                className="w-[12px] h-[12px]"
+                className="w-3 h-3"
               />
               {item}
             </label>

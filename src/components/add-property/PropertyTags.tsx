@@ -42,7 +42,7 @@ export default function PropertyTags() {
   return (
     <section
       aria-labelledby="tags-title"
-      className="w-[416px] flex flex-col gap-6"
+      className=" w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 gap-4 px-4 py-8 lg:px-24 lg:py-20"
     >
       <h2 id="tags-title" className="text-[14px] font-medium text-black">
         Tags
@@ -52,7 +52,7 @@ export default function PropertyTags() {
       <div
         role="group"
         aria-labelledby="tags-title"
-        className="w-[416px] h-[144px] border border-gray-300 rounded-[8px] p-3 flex flex-wrap gap-2 overflow-y-auto"
+        className="w-88.75 h-36 md:w-104  rounded-8 p-3 flex flex-wrap gap-2 overflow-y-auto"
       >
         {existingTags.map((tag) => {
           const isSelected = selected.includes(tag);
@@ -93,23 +93,42 @@ export default function PropertyTags() {
       </div>
 
       {/* Ajout d’un tag personnalisé */}
-      <div className="flex items-center gap-3">
-        <input
-          type="text"
-          placeholder="Ajouter un tag"
-          value={customTag}
-          onChange={(e) => setCustomTag(e.target.value)}
-          className="w-[300px] h-[36px] border border-gray-300 rounded-[8px] px-3 text-[14px]"
-        />
 
-        <button
-          type="button"
-          onClick={addCustomTag}
-          aria-label="Ajouter un tag personnalisé"
-          className="w-[37px] h-[37px] border border-main-red text-main-red rounded-[5px] flex items-center justify-center text-[18px] font-bold"
-        >
-          +
-        </button>
+      <div className="flex flex-col gap-1">
+
+        <p className="text-[14px] font-medium text-black">
+          Ajouter une catégorie personnalisée 
+        </p>
+
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            aria-label="Nouveau tag personnalisé"
+            placeholder="Nouveau tag"
+            value={customTag}
+            onChange={(e) => setCustomTag(e.target.value)}
+            className="w-70.25 lg:w-92.75 h-10 border border-gray-light rounded-8 px-3 text-[14px]"
+          />
+
+          <button
+            type="button"
+            onClick={addCustomTag}
+            aria-label="Ajouter un tag personnalisé"
+            className="w-9.25 h-9.25  text-white bg-main-red rounded-[5px] flex items-center justify-center text-[18px] font-bold hover:bg-dark-orange transition"
+          >
+            +
+          </button>
+        </div>
+
+        {/* Bouton + Ajouter un nouveau tag */}
+          <button
+            type="button"
+            onClick={addCustomTag}
+            className="text-main-red text-[14px] font-normal cursor-pointer w-fit"
+            >
+            + Ajouter un tag
+          </button>
+
       </div>
     </section>
   );

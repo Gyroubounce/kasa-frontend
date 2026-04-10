@@ -30,7 +30,7 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-10 w-full max-w-[450px] flex flex-col gap-6"
+      className="mt-8 w-full max-w-112.5 flex flex-col gap-6"
     >
       {/* MESSAGE D'ERREUR */}
       {error && (
@@ -48,8 +48,8 @@ export default function LoginForm() {
           id="email"
           name="email"
           type="email"
-          placeholder="Votre email"
-          className="w-full h-[40px] border border-gray-300 rounded-[8px] px-3 text-[14px]"
+          
+          className="w-full h-10 border border-gray-light rounded-lg px-3 text-[14px]"
         />
       </div>
 
@@ -62,8 +62,8 @@ export default function LoginForm() {
           id="password"
           name="password"
           type="password"
-          placeholder="Votre mot de passe"
-          className="w-full h-[40px] border border-gray-300 rounded-[8px] px-3 text-[14px]"
+          
+          className="w-full h-10 border border-gray-light rounded-lg px-3 text-[14px]"
         />
       </div>
 
@@ -71,18 +71,28 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="w-[230px] h-[36px] bg-main-red text-white text-[14px] font-medium rounded-[10px] mx-auto disabled:opacity-50"
+        className="w-57.5 h-9 bg-main-red text-white text-[14px] font-medium rounded-10 mx-auto mt-2 hover:bg-dark-orange transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {submitting ? "Connexion..." : "Se connecter"}
       </button>
 
       {/* LIEN INSCRIPTION */}
-      <p className="mt-4 text-[14px] text-black font-normal mx-auto">
-        Pas encore de compte ?{" "}
-        <Link href="/register" className="text-main-red font-normal">
-          Inscrivez-vous
+      <div className="flex flex-col">
+        <Link
+            href="/forgot-password"
+            className="text-[14px] text-main-red hover:text-dark-orange transition-colors"
+          >
+            Mot de passe oublié
         </Link>
-      </p>
+
+        <p className="mt-3 text-[14px] text-main-red font-normal mx-auto">
+          Pas encore de compte ?{" "}
+          <Link href="/register" className="text-main-red font-normal hover:text-dark-orange transition-colors">
+            Inscrivez-vous
+          </Link>
+        </p>
+      </div>
+
     </form>
   );
 }

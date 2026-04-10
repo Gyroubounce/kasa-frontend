@@ -3,10 +3,9 @@ import { Rating } from "@/types/Rating";
 
 // --- HOST ---
 export interface PropertyHost {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   picture?: string;
-  role: string;
 }
 
 // --- BASE ---
@@ -65,4 +64,11 @@ export interface PropertyUpdate {
   location?: string;
   host_id?: string;
   price_per_night?: number;
+
+  host?: PropertyHost;   // 👈 obligatoire pour cohérence
+
+  pictures?: string[];
+  equipments?: string[];
+  tags?: string[];
 }
+

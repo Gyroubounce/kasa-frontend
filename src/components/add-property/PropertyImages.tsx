@@ -67,22 +67,22 @@ export default function PropertyImages() {
   return (
     <section
       aria-labelledby="property-images-title"
-      className="w-[576px] flex flex-col gap-10"
+      className=" w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col mt-2 lg:mt-6 gap-4 px-4 py-4 lg:px-24 lg:py-10"
     >
       <h2 id="property-images-title" className="sr-only">
         Images de la propriété
       </h2>
 
       {/* Zone d’annonce vocale */}
-      <div aria-live="polite" className="text-[12px] text-gray-600">
+      <div aria-live="polite" className="text-[12px] text-gray-dark">
         {uploadMessage}
         {loading && " Upload en cours…"}
         {error && <span className="text-red-500">{error}</span>}
       </div>
 
       {/* BLOC 1 — Image de couverture */}
-      <div className="flex flex-col gap-3">
-        <label className="text-[14px] font-medium text-black">
+      <div className="flex flex-col gap-1">
+        <label htmlFor="cover-upload" className="text-[14px] font-medium text-black">
           Image de couverture
         </label>
 
@@ -96,25 +96,27 @@ export default function PropertyImages() {
           />
 
           <input
-            type="text"
-            placeholder="Aucune image sélectionnée"
+            type="text" 
+            aria-label="Aucune image sélectionnée pour la couverture"           
             value={formData.cover ? "Image sélectionnée" : ""}
             readOnly
-            className="w-[371px] h-[40px] border border-gray-300 rounded-[8px] px-3 text-[14px] bg-gray-50"
+            className="w-70.25 lg:w-92.75 h-10 border border-gray-light rounded-8 px-3 text-[12px] text-gray-dark bg-white"
           />
 
-          <label
-            htmlFor="cover-upload"
+          <button
+            type="button"
+            onClick={() => document.getElementById("cover-upload")?.click()}
             aria-label="Ajouter une image de couverture"
-            className="w-[37px] h-[37px] border border-main-red text-main-red rounded-[5px] flex items-center justify-center cursor-pointer text-[18px] font-bold"
-          >
+            className="w-9.25 h-9.25 bg-main-red text-white rounded-[5px] flex items-center justify-center cursor-pointer text-[18px] font-bold hover:bg-dark-orange transition"
+            >
             +
-          </label>
+          </button>
+
         </div>
 
         {/* Preview cover */}
         {formData.cover && (
-          <div className="w-[200px] h-[120px] rounded-[8px] overflow-hidden border mt-2">
+          <div className="w-50 h-30 rounded-8 overflow-hidden border mt-2">
             <Image
               src={formData.cover}
               alt="Image de couverture"
@@ -127,10 +129,10 @@ export default function PropertyImages() {
       </div>
 
       {/* BLOC 2 — Images du logement */}
-      <div className="flex flex-col gap-3">
-        <label className="text-[14px] font-medium text-black">
+      <div className="flex flex-col gap-1">
+        <p  className="text-[14px] font-medium text-black">
           Images du logement
-        </label>
+        </p>
 
         <div className="flex items-center gap-3">
           <input
@@ -143,26 +145,30 @@ export default function PropertyImages() {
 
           <input
             type="text"
-            placeholder="Aucune image sélectionnée"
+            aria-label="Aucune image sélectionnée pour les images du logement"
+            value={formData.pictures?.length ? "Images sélectionnées" : ""}
             readOnly
-            className="w-[371px] h-[40px] border border-gray-300 rounded-[8px] px-3 text-[14px] bg-gray-50"
+            className="w-70.25 lg:w-92.75 h-10 border border-gray-light rounded-8 px-3 text-[12px] bg-white text-gray-dark"
           />
 
-          <label
-            htmlFor="picture-upload"
+
+          <button
+            type="button"
+            onClick={() => document.getElementById("picture-upload")?.click()}
             aria-label="Ajouter une image du logement"
-            className="w-[37px] h-[37px] border border-main-red text-main-red rounded-[5px] flex items-center justify-center cursor-pointer text-[18px] font-bold"
+            className="w-9.25 h-9.25 bg-main-red text-white rounded-[5px] flex items-center justify-center cursor-pointer text-[18px] font-bold hover:bg-dark-orange transition"
           >
             +
-          </label>
+          </button>
+
         </div>
 
         {/* Liste des images ajoutées */}
-        <div className="flex flex-wrap gap-3 mt-2">
+        <div className="flex flex-wrap gap-3">
           {(formData.pictures || []).map((pic, index) => (
             <div
               key={index}
-              className="relative w-[80px] h-[80px] rounded-[8px] overflow-hidden border"
+              className="relative w-20 h-20 rounded-8 overflow-hidden border"
             >
               <Image
                 src={pic}

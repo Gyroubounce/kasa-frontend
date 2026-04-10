@@ -8,7 +8,7 @@ import menuIcon from "@/../public/images/icons/menu.svg";
 import closeIcon from "@/../public/images/icons/close.svg";
 import heartIcon from "@/../public/images/icons/heart.svg";
 import messageIcon from "@/../public/images/icons/message.svg";
-import addIcon from "@/../public/images/icons/add.svg";
+
 
 import logo from "@/../public/images/Logo-kasa.png";
 import picto from "@/../public/images/Picto-kasa.png";
@@ -28,18 +28,14 @@ export default function Header() {
   const unreadCount = messagingCtx?.unreadCount ?? 0;
 
   return (
-    <header className="w-full flex justify-center py-4 relative">
-      <div className="w-[782px] h-[56px] bg-white rounded-[10px] shadow flex items-center justify-between px-4">
+    <header className="w-full flex justify-center md:pt-8 relative px-2 md:px-0 z-50">
+      <div className="w-full max-w-97.5 md:max-w-195.5 h-21.25 md:h-[56px] bg-white rounded-10 flex items-center justify-center gap-12 px-4">
         
-        {/* Mobile left icon */}
-        <div className="md:hidden">
-          <Image src={picto} alt="Kasa" className="w-10 h-10" />
-        </div>
-
+       
         {/* Desktop navigation left */}
-        <nav className="hidden md:flex gap-6 text-[14px] font-medium">
-          <Link href="/" className="hover:text-main-red">Accueil</Link>
-          <Link href="/about" className="hover:text-main-red">À propos</Link>
+        <nav className="hidden md:flex gap-5">
+          <Link href="/" className="w-15 text-[14px] hover:text-main-red hover:font-bold">Accueil</Link>
+          <Link href="/about" className="w-footer text-[14px] hover:text-main-red hover:font-bold">À propos</Link>
         </nav>
 
         {/* Logo center */}
@@ -51,26 +47,28 @@ export default function Header() {
         <div className="hidden md:flex items-center gap-4">
           {user && <p>Bonjour {user.name}</p>}
 
-          <Link href="/add-property" className="flex items-center gap-2 text-main-red font-semibold">
-            <Image src={addIcon} alt="Ajouter" className="w-5 h-5" />
-            Ajouter un logement
+          <Link href="/add-property" className="flex items-center gap- text-main-red text-[14px] mr-4">
+            + Ajouter un logement
           </Link>
 
           {/* Favoris + compteur */}
           <Link href="/favorites" className="relative">
-            <Image src={heartIcon} alt="Favoris" className="w-6 h-6" />
+            <Image src={heartIcon} alt="Favoris" className="w-3 h-3" />
             {user && favoritesCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-main-red text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-3 -right-3 bg-main-red text-white text-[12px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {favoritesCount}
               </span>
             )}
           </Link>
 
+          {/* SEPARATOR */}
+          <div className="w-px h-2 bg-main-red"></div>
+
           {/* Messages + compteur */}
           <Link href="/messaging" className="relative">
-            <Image src={messageIcon} alt="Messages" className="w-6 h-6" />
+            <Image src={messageIcon} alt="Messages" className="w-3 h-3" />
             {user && unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-main-red text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-3 -right-3 bg-main-red text-white text-[12px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {unreadCount}
               </span>
             )}
@@ -78,30 +76,66 @@ export default function Header() {
         </div>
 
         {/* Mobile burger */}
-        <button
-          className="md:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-        >
-          {open ? (
-            <Image src={closeIcon} alt="Fermer" className="w-5 h-5" />
-          ) : (
-            <Image src={menuIcon} alt="Menu" className="w-5 h-5" />
-          )}
-        </button>
+        <div className="md:hidden flex items-center justify-between w-full">
+          <Image src={picto} alt="Kasa" className="w-11.5 h-13.5" />
+
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+            className="flex items-center justify-center"
+          >
+            {open ? (
+              <Image src={closeIcon} alt="Fermer" className="w-5 h-5" />
+            ) : (
+              <Image src={menuIcon} alt="Menu" className="w-6.5 h-7" />
+            )}
+          </button>
+        </div>
+
       </div>
 
       {/* Mobile menu */}
       {open && (
-        <div className="absolute top-[80px] left-0 w-full bg-white shadow-md p-6 flex flex-col gap-4 md:hidden">
-          <Link href="/" className="text-[24px]">Accueil</Link>
-          <Link href="/about" className="text-[24px]">À propos</Link>
-          <Link href="/messaging" className="text-[24px]">Messagerie</Link>
-          <Link href="/favorites" className="text-[24px]">Favoris</Link>
+        <div className="absolute top-18 left-0 w-full h-[calc(100vh-72px)] bg-white shadow-md p-6 flex flex-col gap-8 md:hidden  z-50 overflow-y-auto">
+          <Link href="/" onClick={() => setOpen(false)} className="text-[24px]">Accueil</Link>
 
+          <Link href="/about" onClick={() => setOpen(false)} className="text-[24px]">À propos</Link>
+         
+          {/* Messagerie + compteur */}
+          <Link
+            href="/messaging"
+            onClick={() => setOpen(false)}
+            className="text-[24px] relative flex items-center gap-3"
+          >
+            
+            Messagerie
+            {user && unreadCount > 0 && (
+              <span className="absolute left-37.5 bg-main-red text-white text-[12px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </Link>
+
+          {/* Favoris + compteur */}
+          <Link
+            href="/favorites"
+            onClick={() => setOpen(false)}
+            className="text-[24px] relative flex items-center gap-3"
+          >
+            
+            Favoris
+            {user && favoritesCount > 0 && (
+              <span className="absolute left-25 bg-main-red text-white text-[12px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                {favoritesCount}
+              </span>
+            )}
+          </Link>
+
+          {/* Ajouter un logement */}
           <Link
             href="/add-property"
-            className="bg-main-red text-white text-[14px] w-[200px] h-[36px] flex items-center justify-center rounded"
+            onClick={() => setOpen(false)}
+            className="bg-main-red text-white text-[14px] w-50 h-9 flex items-center justify-center rounded-10"
           >
             Ajouter un logement
           </Link>

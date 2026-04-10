@@ -1,51 +1,55 @@
 export default function HowItWorks() {
   return (
     <section
-      className="w-[1440px] flex flex-col items-center mt-20 mb-20"
+      className="w-88.5 lg:w-278.75 bg-white flex flex-col items-center mt-10 mb-10"
       aria-labelledby="how-it-works-title"
     >
       <h2
         id="how-it-works-title"
-        className="text-[24px] font-semibold text-center text-black"
+        className="text-[24px] font-semibold text-center text-black mt-10"
       >
         Comment ça marche ?
       </h2>
 
-      <p className="text-[14px] text-black mt-2 text-center max-w-[600px]">
-        Découvrez comment utiliser notre plateforme en quelques étapes simples.
+      <p className="text-[14px] text-black mt-4 text-center">
+        Que vous partiez pour un week-end improvisé, des vacances en famille ou un voyage professionnel,<br />
+        Kasa vous aide à trouver un lieu qui vous{" "}
+        <br className="block md:hidden" />
+        ressemble.
       </p>
 
-      <div className="flex gap-6 mt-10" role="list">
+
+      <div className="flex flex-col lg:flex-row gap-6 mt-10 mb-10" role="list">
         {/* Carte 1 */}
         <article
           role="listitem"
-          className="w-[270px] h-[199px] bg-dark-orange rounded-[10px] p-5 text-white"
+          className="w-88.5 lg:w-67.5 h-48.75 border bg-dark-orange rounded-10 p-5 text-white"
         >
-          <h3 className="text-[18px] font-medium">1. Recherchez</h3>
-          <p className="text-[12px] mt-2">
-            Explorez notre catalogue de logements partout en France.
+          <h3 className="text-[18px] font-medium mt-5">Recherchez</h3>
+          <p className="text-[12px] mt-4">
+           Entrez votre destination, vos dates et laissez Kasa faire le reste
           </p>
         </article>
 
         {/* Carte 2 */}
         <article
           role="listitem"
-          className="w-[270px] h-[199px] bg-dark-orange rounded-[10px] p-5 text-white"
+          className="w-88.5 lg:w-67.5 h-48.75 border bg-dark-orange rounded-10 p-5 text-white"
         >
-          <h3 className="text-[18px] font-medium">2. Réservez</h3>
-          <p className="text-[12px] mt-2">
-            Choisissez vos dates et réservez en toute simplicité.
+          <h3 className="text-[18px] font-medium mt-5">Réservez</h3>
+          <p className="text-[12px] mt-4">
+            Profitez d’une plateforme sécurisée et de profils d’hôtes vérifiés.
           </p>
         </article>
 
         {/* Carte 3 */}
         <article
           role="listitem"
-          className="w-[270px] h-[199px] bg-dark-orange rounded-[10px] p-5 text-white"
+          className="w-88.5 lg:w-67.5 h-48.75 border bg-dark-orange rounded-10 p-5 text-white"
         >
-          <h3 className="text-[18px] font-medium">3. Profitez</h3>
-          <p className="text-[12px] mt-2">
-            Installez‑vous et profitez de votre séjour en toute tranquillité.
+          <h3 className="text-[18px] font-medium mt-5">Vivez l’expérience</h3>
+          <p className="text-[12px] mt-4">
+            Installez-vous, profitez de votre séjour, et sentez-vous chez vous, partout.
           </p>
         </article>
       </div>

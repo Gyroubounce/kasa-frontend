@@ -13,7 +13,7 @@ export default function Carousel({ pictures }: CarouselProps) {
   // Cas : aucune image
   if (!pictures || pictures.length === 0) {
     return (
-      <div  data-testid="placeholder" className="w-full h-[358px] md:h-[540px] bg-gray-200 rounded-[10px]" />
+      <div  data-testid="placeholder" className="w-full h-89.5 md:h-135 bg-gray-light rounded-10" />
     );
   }
 
@@ -30,9 +30,9 @@ export default function Carousel({ pictures }: CarouselProps) {
   };
 
   return (
-    <div className="flex gap-4 w-full">
+    <div className="flex flex-col md:flex-row gap-2">
       {/* Grande image */}
-      <div className="relative w-full md:w-[580px] h-[358px] md:h-[358px] rounded-[10px] overflow-hidden">
+      <div className="relative w-89.5 h-105.25 md:w-75.75 md:h-89.5 rounded-10 overflow-hidden">
         <Image
           src={pictures[index]}
           alt={`Image ${index + 1}`}
@@ -47,24 +47,24 @@ export default function Carousel({ pictures }: CarouselProps) {
             <button
               onClick={prev}
               aria-label="Image précédente"
-              className="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full items-center justify-center"
+              className="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-light rounded-full items-center justify-center"
             >
-              <span className="text-black text-[14px] font-bold">‹</span>
+              <span className="text-gray-dark text-[14px] font-bold">‹</span>
             </button>
 
             <button
               onClick={next}
               aria-label="Image suivante"
-              className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full items-center justify-center"
+              className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-light rounded-full items-center justify-center"
             >
-              <span className="text-black text-[14px] font-bold">›</span>
+              <span className="text-gray-dark text-[14px] font-bold">›</span>
             </button>
           </>
         )}
 
         {/* Pagination */}
         {hasMultiple && (
-          <div className="absolute bottom-3 right-3 text-gray-700 text-[12px] bg-white/80 px-2 py-1 rounded">
+          <div className="absolute bottom-3 right-3 text-gray-dark text-[12px] bg-gray-light px-2 py-1 rounded">
             {index + 1} / {pictures.length}
           </div>
         )}
@@ -72,13 +72,13 @@ export default function Carousel({ pictures }: CarouselProps) {
 
       {/* Miniatures verticales (desktop) */}
       {hasMultiple && (
-        <div className="hidden md:flex flex-col gap-2 w-[83px] overflow-y-auto max-h-[358px]">
+        <div className="hidden md:grid grid-cols-2 gap-2 w-75.75 h-89.5 overflow-y-auto max-h-89.5">
           {pictures.map((pic, i) => (
             <button
               key={i}
               onClick={() => setIndex(i)}
               aria-label="Image précédente"
-              className={`relative w-[83px] h-[101px] rounded-[10px] overflow-hidden border ${
+              className={`relative w-36.5 h-43.5 rounded-10 overflow-hidden border ${
                 i === index ? "border-main-red" : "border-gray-300"
               }`}
             >
@@ -90,13 +90,13 @@ export default function Carousel({ pictures }: CarouselProps) {
 
         {/* Miniatures horizontales (mobile) */}
         {hasMultiple && (
-        <div className="md:hidden flex gap-2 mt-3 overflow-x-auto">
+        <div className="md:hidden flex gap-2 overflow-x-auto max-w-89.5">
             {pictures.map((pic, i) => (
             <button
                 key={i}
                 onClick={() => setIndex(i)}
                 aria-label="Image suivante"
-                className={`relative min-w-[83px] h-[101px] rounded-[10px] overflow-hidden border ${
+                className={`relative min-w-20.75 h-27.25 rounded-6 overflow-hidden border ${
                 i === index ? "border-main-red" : "border-gray-300"
                 }`}
             >
