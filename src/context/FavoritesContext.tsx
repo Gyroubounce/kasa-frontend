@@ -8,76 +8,82 @@ import {
   useCallback,
   useMemo,
 } from "react";
-import {
-  getFavorites,
-  toggleFavorite as apiToggleFavorite,
-} from "@/lib/api/favorites";
+
 import { useAuthContext } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/utils/fetcher";
+import { API_URL } from "@/lib/env";
+import { PropertyBase } from "@/types/property";
 
 interface FavoritesContextType {
   favorites: string[];
+  properties: PropertyBase[];
   loading: boolean;
   error: string | null;
   isFavorite: (propertyId: string) => boolean;
   toggle: (propertyId: string) => Promise<void>;
-  setFavorites: (ids: string[]) => void;
+  refreshFavorites: () => Promise<void>;
 }
 
 const FavoritesContext = createContext<FavoritesContextType | null>(null);
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuthContext();
-  const [favorites, setFavoritesState] = useState<string[]>([]);
+
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [properties, setProperties] = useState<PropertyBase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   /* -------------------------------------------------------
-     CHARGER LES FAVORIS AU LOGIN (avec queueMicrotask)
+     FETCH FAVORIS + PROPRIÉTÉS
   -------------------------------------------------------- */
-  useEffect(() => {
+  const refreshFavorites = useCallback(async () => {
     if (!user) {
-      queueMicrotask(() => setFavoritesState([]));
-      queueMicrotask(() => setLoading(false));
+      setFavorites([]);
+      setProperties([]);
+      setLoading(false);
       return;
     }
 
-    queueMicrotask(() => setLoading(true));
+    setLoading(true);
 
-    getFavorites(user.id)
-      .then((data) => {
-        const ids = data.map((f) => String(f.propertyId));
-        queueMicrotask(() => setFavoritesState(ids));
-      })
-      .catch((err: unknown) => {
-        queueMicrotask(() =>
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Erreur lors du chargement des favoris"
-          )
-        );
-      })
-      .finally(() => {
-        queueMicrotask(() => setLoading(false));
-      });
+    try {
+      const data = await apiFetch<PropertyBase[]>(
+        `${API_URL}/api/users/${user.id}/favorites`
+      );
+
+      setFavorites(data.map((p) => String(p.id)));
+      setProperties(data);
+      setError(null);
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erreur lors du chargement des favoris"
+      );
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
   /* -------------------------------------------------------
-     MEMOIZATION DES FONCTIONS
+     AUTO-LOAD QUAND USER CHANGE
   -------------------------------------------------------- */
+  useEffect(() => {
+    refreshFavorites();
+  }, [user, refreshFavorites]);
 
-  // ⭐ setFavorites stable
-  const setFavorites = useCallback((ids: string[]) => {
-    queueMicrotask(() => setFavoritesState(ids));
-  }, []);
-
-  // ⭐ isFavorite stable
+  /* -------------------------------------------------------
+     CHECK FAVORI
+  -------------------------------------------------------- */
   const isFavorite = useCallback(
     (propertyId: string) => favorites.includes(propertyId),
     [favorites]
   );
 
-  // ⭐ toggle stable
+  /* -------------------------------------------------------
+     TOGGLE FAVORI
+  -------------------------------------------------------- */
   const toggle = useCallback(
     async (propertyId: string) => {
       if (!user) return;
@@ -85,51 +91,54 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       const currentlyFavorite = favorites.includes(propertyId);
 
       // Optimistic UI
-      queueMicrotask(() =>
-        setFavoritesState((prev) =>
-          currentlyFavorite
-            ? prev.filter((id) => id !== propertyId)
-            : [...prev, propertyId]
-        )
+      setFavorites((prev) =>
+        currentlyFavorite
+          ? prev.filter((id) => id !== propertyId)
+          : [...prev, propertyId]
       );
 
       try {
-        await apiToggleFavorite(propertyId, currentlyFavorite);
-      } catch (err: unknown) {
-        // rollback
-        queueMicrotask(() =>
-          setFavoritesState((prev) =>
-            currentlyFavorite
-              ? [...prev, propertyId]
-              : prev.filter((id) => id !== propertyId)
-          )
+        await apiFetch(
+          `${API_URL}/api/users/${user.id}/favorites/${propertyId}`,
+          {
+            method: currentlyFavorite ? "DELETE" : "POST",
+          }
         );
 
-        queueMicrotask(() =>
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Erreur lors de la mise à jour des favoris"
-          )
+        // Recharger les propriétés pour rester synchro
+        refreshFavorites();
+      } catch (err: unknown) {
+        // rollback
+        setFavorites((prev) =>
+          currentlyFavorite
+            ? [...prev, propertyId]
+            : prev.filter((id) => id !== propertyId)
+        );
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Erreur lors de la mise à jour des favoris"
         );
       }
     },
-    [favorites, user]
+    [favorites, user, refreshFavorites]
   );
 
   /* -------------------------------------------------------
-     MEMOIZATION DE LA VALUE DU CONTEXTE
+     VALUE MEMOIZÉE
   -------------------------------------------------------- */
   const value = useMemo(
     () => ({
       favorites,
+      properties,
       loading,
       error,
       isFavorite,
       toggle,
-      setFavorites,
+      refreshFavorites,
     }),
-    [favorites, loading, error, isFavorite, toggle, setFavorites]
+    [favorites, properties, loading, error, isFavorite, toggle, refreshFavorites]
   );
 
   return (

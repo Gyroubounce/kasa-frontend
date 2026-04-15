@@ -4,24 +4,35 @@ export async function fetchWithAuth(
   endpoint: string,
   options: RequestInit = {}
 ) {
-  const token = localStorage.getItem("kasa_token");
-
-  const headers = {
-    ...(options.headers || {}),
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  console.log("🔵 fetchWithAuth → appel :", endpoint);
 
   const res = await fetch(`${API_URL}${endpoint}`, {
     ...options,
-    headers,
-    credentials: "include", // 🔥 OBLIGATOIRE POUR ENVOYER LES COOKIES
+    credentials: "include", // ⭐ OBLIGATOIRE POUR ENVOYER LE COOKIE
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
   });
 
+  console.log("📥 fetchWithAuth → status :", res.status);
+
   if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(error.message || "Erreur API");
+    let message = "Erreur API";
+
+    try {
+      const error = await res.json();
+      console.log("🔴 fetchWithAuth → erreur JSON :", error);
+      message = error.message || message;
+    } catch {
+      console.log("🔴 fetchWithAuth → erreur sans JSON");
+    }
+
+    throw new Error(message);
   }
 
-  return res.json();
+  const json = await res.json();
+  console.log("🟢 fetchWithAuth → JSON :", json);
+
+  return json;
 }

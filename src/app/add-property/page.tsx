@@ -34,7 +34,7 @@ function AddPropertyContent() {
     redirect("/login");
   }
   // 🚨 AJOUT : Vérification du rôle
-if (user.role !== "owner") {
+if (!loading && user && user.role !== "owner") {
   redirect("/unauthorized");
 }
 

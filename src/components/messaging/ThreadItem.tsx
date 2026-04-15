@@ -20,9 +20,9 @@ export function ThreadItem({ thread }: ThreadItemProps) {
     <Link
       href={`/messaging/${thread.id}`}
       className={`
-        w-[360px] h-[61px] flex items-center justify-between px-2 border-b
+        w-90 h-15.25 flex items-center justify-between px-2 border-b
         transition-colors
-        ${isSelected ? "bg-orange-50 border-orange-200" : "bg-white border-gray-200"}
+        ${isSelected ? "bg-light-orange border-gray-light" : "bg-white border-gray-light"}
       `}
     >
       {/* LEFT */}
@@ -30,17 +30,17 @@ export function ThreadItem({ thread }: ThreadItemProps) {
         <Image
           src={avatar}
           alt={`Avatar de ${thread.otherUser.name}`}
-          className="w-[44px] h-[45px] rounded-full object-cover"
+          className="w-11 h-11.25 rounded-[5px] object-cover"
           width={44}
           height={45}
         />
 
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-y-1">
           <span className="text-[14px] font-medium text-black">
             {thread.otherUser.name}
           </span>
 
-          <span className="text-[10px] text-gray-600 truncate max-w-[200px]">
+          <span className="text-[10px] text-gray-dark truncate max-w-50">
             {thread.lastMessage || "Aucun message"}
           </span>
         </div>
@@ -48,10 +48,16 @@ export function ThreadItem({ thread }: ThreadItemProps) {
 
       {/* RIGHT */}
       <div className="flex flex-col items-end">
-        <span className="text-[10px] text-gray-600">11:04 am</span>
+        <span className="text-[10px] text-gray-dark">11:04 am</span>
 
         {thread.unread > 0 && (
-          <span className="w-[6px] h-[6px] bg-main-red rounded-full mt-1"></span>
+          <span
+            className={`
+              w-1.5 h-1.5 rounded-full mt-1
+              ${thread.unread > 0 ? "bg-main-red" : "bg-gray-dark"}
+            `}
+          ></span>
+
         )}
       </div>
     </Link>

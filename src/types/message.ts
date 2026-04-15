@@ -1,9 +1,12 @@
+// FRONTEND — kasa-frontend/src/types/message.ts
+
 import { UserPublic } from "./user";
+import { PropertyHost } from "./property";
 
 export interface Message {
   id: string;
   threadId: string;
-  sender: UserPublic;
+  sender: UserPublic | PropertyHost;
   content: string;
   createdAt: string;
   read: boolean;
@@ -11,7 +14,7 @@ export interface Message {
 
 export interface Thread {
   id: string;
-  otherUser: UserPublic;
+  otherUser: UserPublic | PropertyHost;
   lastMessage: string;
   unread: number;
 }
@@ -20,8 +23,20 @@ export interface MessagingContextType {
   threads: Thread[];
   messages: Message[];
   unreadCount: number;
+
   getMessages: (threadId: string) => Message[];
-  sendMessage: (threadId: string, sender: UserPublic, content: string) => void;
-  createThread: (otherUser: UserPublic) => string;
-  getThreadUser: (threadId: string) => UserPublic;
+
+  // ✔ NOUVELLE SIGNATURE
+  sendMessage: (threadId: string, content: string) => void;
+
+  createThread: (otherUser: UserPublic | PropertyHost) => string;
+
+  getThreadUser: (threadId: string) => UserPublic | PropertyHost;
+
+  startConversationWithHost: (
+    host: UserPublic | PropertyHost,
+    suggestedMessage?: string
+  ) => string | undefined;
+
+  markThreadAsRead: (threadId: string) => void;
 }

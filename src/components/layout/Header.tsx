@@ -9,13 +9,12 @@ import closeIcon from "@/../public/images/icons/close.svg";
 import heartIcon from "@/../public/images/icons/heart.svg";
 import messageIcon from "@/../public/images/icons/message.svg";
 
-
 import logo from "@/../public/images/Logo-kasa.png";
 import picto from "@/../public/images/Picto-kasa.png";
 
 import { useAuthContext } from "@/context/AuthContext";
 import { useFavoritesContext } from "@/context/FavoritesContext";
-import { useMessaging } from "@/context/MessagingContext"; 
+import { useMessaging } from "@/context/MessagingContext";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -30,8 +29,7 @@ export default function Header() {
   return (
     <header className="w-full flex justify-center md:pt-8 relative px-2 md:px-0 z-50">
       <div className="w-full max-w-97.5 md:max-w-195.5 h-21.25 md:h-[56px] bg-white rounded-10 flex items-center justify-center gap-12 px-4">
-        
-       
+
         {/* Desktop navigation left */}
         <nav className="hidden md:flex gap-5">
           <Link href="/" className="w-15 text-[14px] hover:text-main-red hover:font-bold">Accueil</Link>
@@ -40,7 +38,15 @@ export default function Header() {
 
         {/* Logo center */}
         <div className="hidden md:block">
-          <Image src={logo} alt="Logo Kasa" className="w-30 h-10" />
+          <Image
+            src={logo}
+            alt="Logo Kasa"
+            width={120}
+            height={40}
+            loading="eager"   // ⭐ Corrige le warning LCP
+            priority          // ⭐ Recommandé pour le logo
+            className="w-30 h-10"
+          />
         </div>
 
         {/* Desktop right actions */}
@@ -51,9 +57,9 @@ export default function Header() {
             + Ajouter un logement
           </Link>
 
-          {/* Favoris + compteur */}
+          {/* Favoris */}
           <Link href="/favorites" className="relative">
-            <Image src={heartIcon} alt="Favoris" className="w-3 h-3" />
+            <Image src={heartIcon} alt="Favoris" width={20} height={20} className="w-3 h-3" />
             {user && favoritesCount > 0 && (
               <span className="absolute -top-3 -right-3 bg-main-red text-white text-[12px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {favoritesCount}
@@ -61,12 +67,11 @@ export default function Header() {
             )}
           </Link>
 
-          {/* SEPARATOR */}
           <div className="w-px h-2 bg-main-red"></div>
 
-          {/* Messages + compteur */}
+          {/* Messages */}
           <Link href="/messaging" className="relative">
-            <Image src={messageIcon} alt="Messages" className="w-3 h-3" />
+            <Image src={messageIcon} alt="Messages" width={20} height={20} className="w-3 h-3" />
             {user && unreadCount > 0 && (
               <span className="absolute -top-3 -right-3 bg-main-red text-white text-[12px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {unreadCount}
@@ -77,7 +82,15 @@ export default function Header() {
 
         {/* Mobile burger */}
         <div className="md:hidden flex items-center justify-between w-full">
-          <Image src={picto} alt="Kasa" className="w-11.5 h-13.5" />
+          <Image
+            src={picto}
+            alt="Kasa"
+            width={60}
+            height={60}
+            loading="eager"   // ⭐ Corrige le warning mobile
+            priority
+            className="w-11.5 h-13.5"
+          />
 
           <button
             onClick={() => setOpen(!open)}
@@ -85,9 +98,9 @@ export default function Header() {
             className="flex items-center justify-center"
           >
             {open ? (
-              <Image src={closeIcon} alt="Fermer" className="w-5 h-5" />
+              <Image src={closeIcon} alt="Fermer" width={20} height={20} className="w-5 h-5" />
             ) : (
-              <Image src={menuIcon} alt="Menu" className="w-6.5 h-7" />
+              <Image src={menuIcon} alt="Menu" width={28} height={28} className="w-7 h-7" />
             )}
           </button>
         </div>
@@ -96,18 +109,11 @@ export default function Header() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="absolute top-18 left-0 w-full h-[calc(100vh-72px)] bg-white shadow-md p-6 flex flex-col gap-8 md:hidden  z-50 overflow-y-auto">
+        <div className="absolute top-18 left-0 w-full h-[calc(100vh-72px)] bg-white shadow-md p-6 flex flex-col gap-8 md:hidden z-50 overflow-y-auto">
           <Link href="/" onClick={() => setOpen(false)} className="text-[24px]">Accueil</Link>
-
           <Link href="/about" onClick={() => setOpen(false)} className="text-[24px]">À propos</Link>
-         
-          {/* Messagerie + compteur */}
-          <Link
-            href="/messaging"
-            onClick={() => setOpen(false)}
-            className="text-[24px] relative flex items-center gap-3"
-          >
-            
+
+          <Link href="/messaging" onClick={() => setOpen(false)} className="text-[24px] relative flex items-center gap-3">
             Messagerie
             {user && unreadCount > 0 && (
               <span className="absolute left-37.5 bg-main-red text-white text-[12px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
@@ -116,13 +122,7 @@ export default function Header() {
             )}
           </Link>
 
-          {/* Favoris + compteur */}
-          <Link
-            href="/favorites"
-            onClick={() => setOpen(false)}
-            className="text-[24px] relative flex items-center gap-3"
-          >
-            
+          <Link href="/favorites" onClick={() => setOpen(false)} className="text-[24px] relative flex items-center gap-3">
             Favoris
             {user && favoritesCount > 0 && (
               <span className="absolute left-25 bg-main-red text-white text-[12px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
@@ -131,12 +131,7 @@ export default function Header() {
             )}
           </Link>
 
-          {/* Ajouter un logement */}
-          <Link
-            href="/add-property"
-            onClick={() => setOpen(false)}
-            className="bg-main-red text-white text-[14px] w-50 h-9 flex items-center justify-center rounded-10"
-          >
+          <Link href="/add-property" onClick={() => setOpen(false)} className="bg-main-red text-white text-[14px] w-50 h-9 flex items-center justify-center rounded-10">
             Ajouter un logement
           </Link>
         </div>

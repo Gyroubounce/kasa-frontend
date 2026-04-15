@@ -1,72 +1,150 @@
 "use client";
 
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useMessaging } from "@/context/MessagingContext";
-import { MessageBubbleOther } from "@/components/messaging/MessageBubbleOther";
-import { MessageBubbleMe } from "@/components/messaging/MessageBubbleMe";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/context/AuthContext";
+
 import Image from "next/image";
 import ArrowSendIcon from "@/../public/images/icons/send.svg";
 
-export default function Conversation({ threadId }: { threadId: string }) {
-  const { getMessages } = useMessaging();
-  const { user: currentUser } = useAuth();
+import { MessageBubbleMe } from "./MessageBubbleMe";
+import { MessageBubbleOther } from "./MessageBubbleOther";
+
+interface Props {
+  threadId: string;
+}
+
+export default function Conversation({ threadId }: Props) {
+  const { getMessages, sendMessage, markThreadAsRead } = useMessaging();
+  const { user: currentUser } = useAuthContext();
+
+  const [text, setText] = useState("");
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  // 🟦 Stabilisation des messages
+  const messages = useMemo(() => {
+    if (!currentUser) return [];
+    return getMessages(threadId);
+  }, [currentUser, getMessages, threadId]);
+
+  // 🟥 Marquer le thread comme lu à l’ouverture / changement
+  useEffect(() => {
+    if (!threadId) return;
+    markThreadAsRead(threadId);
+  }, [threadId, markThreadAsRead]);
+
+  // 🟦 Scroll auto stable
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   if (!currentUser) return null;
 
-  const messages = getMessages(threadId);
-
   return (
-    <div className="flex flex-col h-full">
-
-      {/* MESSAGES AREA — scrollable */}
-    <div className="flex-1 overflow-y-auto pr-2">
+    <div
+      className="
+        flex flex-col h-full 
+        md:px-6 lg:px-0   
+      "
+    >
+      {/* LISTE DES MESSAGES */}
+      <div className="flex-1 overflow-y-auto pr-2">
         <div className="flex flex-col gap-4 w-full">
-            {messages.map((m) => (
-            <div key={m.id} className="w-full flex">
-                {m.sender.id == currentUser.id ? (
-                <div className="w-full flex justify-end">
-        
+          {messages.map((m) => {
+            const isMe = String(m.sender.id) === String(currentUser.id);
+
+            return (
+              <div key={m.id} className="w-full flex">
+                {isMe ? (
+                  <div className="w-full flex justify-end">
                     <MessageBubbleMe
-                    content={m.content}
-                    sender={m.sender}
-                    time={new Date(m.createdAt).toLocaleTimeString([], {
+                      content={m.content}
+                      sender={m.sender}
+                      time={new Date(m.createdAt).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
-                    })}
+                      })}
                     />
-                </div>
+                  </div>
                 ) : (
-                <div className="w-full flex justify-start">
-                  coucou
+                  <div className="w-full flex justify-start">
                     <MessageBubbleOther
-                    content={m.content}
-                    sender={m.sender}
-                    time={new Date(m.createdAt).toLocaleTimeString([], {
+                      content={m.content}
+                      sender={m.sender}
+                      time={new Date(m.createdAt).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
-                    })}
+                      })}
                     />
-                </div>
+                  </div>
                 )}
-            </div>
-            ))}
+              </div>
+            );
+          })}
+
+          <div ref={bottomRef} />
         </div>
-    </div>
+      </div>
 
-
-      {/* INPUT AREA — fixed at bottom */}
-      <div className="w-full h-[95px] border border-gray-300 rounded-[10px] p-3 mt-4 relative">
-        <textarea
-          placeholder="Envoyer un message"
-          className="w-full h-full resize-none outline-none text-[14px]"
-        />
-
-        <button
-          className="absolute bottom-3 right-3 w-[32px] h-[32px] bg-main-red rounded-[5px] flex items-center justify-center"
-          aria-label="Envoyer le message"
+      {/* INPUT */}
+      <div
+        className="
+          w-full 
+          flex justify-center        
+          md:justify-start           
+        "
+      >
+        <div
+          className="
+            md:w-full w-82.5     
+            h-11 md:h-23.75     
+            border border-gray-300 
+            rounded-10 
+            px-3 
+            mt-4 
+            relative 
+            flex items-center        
+          "
         >
-          <Image src={ArrowSendIcon} alt="Envoyer" className="w-[8px] h-auto" />
-        </button>
+          <textarea
+            placeholder="Envoyer un message"
+            className="
+              flex-1
+              h-5 md:h-full     
+              resize-none 
+              outline-none 
+              text-[12px]
+              overflow-x-auto
+              overflow-y-hidden
+              md:pt-4 md:pl-3
+              pr-10                 
+            "
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+
+          <button
+            onClick={() => {
+              if (text.trim().length === 0) return;
+              sendMessage(threadId, text);
+              setText("");
+            }}
+            className="
+              absolute 
+              right-1 md:right-2.5
+              top-1/2 -translate-y-1/2   
+              md:top-auto md:bottom-1.5       
+              md:translate-y-0 
+              w-8 h-8 
+              bg-main-red 
+              rounded-[5px] 
+              flex items-center justify-center
+            "
+            aria-label="Envoyer le message"
+          >
+            <Image src={ArrowSendIcon} alt="Envoyer" className="w-2 h-auto" />
+          </button>
+        </div>
       </div>
     </div>
   );

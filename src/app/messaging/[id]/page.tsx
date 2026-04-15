@@ -42,8 +42,11 @@ export default function ConversationPage() {
 
         {/* MOBILE HEADER — only visible on mobile */}
         {mounted && isMobile && (
-          <BackButton to="/" label="Retour" />
+          <div className="md:ml-4">
+            <BackButton to="/messaging" label="Retour" />
+          </div>
         )}
+
 
         <Conversation threadId={id as string} />
       </div>

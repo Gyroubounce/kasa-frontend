@@ -1,13 +1,18 @@
 import Image from "next/image";
-import logo from "@/../public/images/Picto-kasa.png"
+import logo from "@/../public/images/Picto-kasa.png";
 
 export default function Footer() {
   return (
     <footer className="w-full flex justify-center bg-white">
       <div className="w-full max-w-97.5 md:max-w-360 h-footer px-2 flex justify-between items-center md:px-6">
+        
         <Image
           src={logo}
           alt="Kasa logo"
+          width={60}          // ⭐ Obligatoire
+          height={60}         // ⭐ Obligatoire
+          loading="eager"     // ⭐ Recommandé (logo visible immédiatement)
+          priority            // ⭐ Optimise le chargement
           className="w-11.5 h-13.5"
         />
 

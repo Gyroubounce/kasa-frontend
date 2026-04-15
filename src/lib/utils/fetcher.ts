@@ -5,23 +5,16 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   try {
-    // 🔥 Récupération du token depuis localStorage
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("kasa_token") : null;
-
-    console.log("🔑 apiFetch → token lu :", token);
-
     console.log("📡 apiFetch → appel :", {
       endpoint,
       method: options.method || "GET",
-      hasToken: !!token,
     });
 
     const res = await fetch(endpoint, {
       ...options,
+      credentials: "include", // ⭐ OBLIGATOIRE POUR ENVOYER LE COOKIE HTTP-ONLY
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(options.headers || {}),
       },
       cache: "no-store",

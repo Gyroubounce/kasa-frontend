@@ -41,8 +41,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <div className="relative w-full h-94">
           <Image
             src={property.cover}
-            alt=""
+            alt={property.title}
             fill
+            priority          // ⭐ Corrige le warning LCP
+            loading="eager"   // ⭐ Corrige le warning LCP
             sizes="(max-width: 768px) 100vw, 355px"
             className="object-cover rounded-t-10"
           />

@@ -1,10 +1,15 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { login as apiLogin, register as apiRegister } from "@/lib/api/auth";
-import type { AuthUser, AuthResponse } from "@/types/auth";
 import { useRouter } from "next/navigation";
 
+interface AuthUser {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  picture?: string | null;
+}
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -12,36 +17,47 @@ interface AuthContextType {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   /* -------------------------------------------------------
-     AUTO-LOGIN (CLIENT-ONLY)
-     → Pas d'accès à localStorage côté serveur
-     → Pas de warning ESLint
+     REFRESH USER (appel /auth/me)
   -------------------------------------------------------- */
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  async function refreshUser() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+      credentials: "include",
+    });
 
-    const savedUser = localStorage.getItem("kasa_user");
-    const savedToken = localStorage.getItem("kasa_token");
-
-    if (savedUser && savedToken) {
-      queueMicrotask(() => {
-        setUser(JSON.parse(savedUser)); // ✔ ESLint OK
-      });
+    if (!res.ok) {
+      setUser(null);
+      return;
     }
 
-    queueMicrotask(() => setLoading(false));
+    const data = await res.json();
+    setUser(data.user);
+  } catch {
+    setUser(null);
+    }
+}
+
+    useEffect(() => {
+    (async () => {
+      await refreshUser();
+      setLoading(false); // ✔ ici, et seulement ici
+    })();
   }, []);
+
 
   /* -------------------------------------------------------
      LOGIN
@@ -49,18 +65,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function login(email: string, password: string) {
     setError(null);
 
-    try {
-      const data: AuthResponse = await apiLogin(email, password);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-      localStorage.setItem("kasa_user", JSON.stringify(data.user));
-      localStorage.setItem("kasa_token", data.token);
-
-      setUser(data.user);
-    } catch (err: unknown) {
-      if (err instanceof Error) setError(err.message);
-      else setError("Erreur lors de la connexion");
-      throw err;
+    if (!res.ok) {
+      const err = await res.json();
+      setError(err.error || "Erreur lors de la connexion");
+      throw new Error(err.error);
     }
+
+    await refreshUser();
   }
 
   /* -------------------------------------------------------
@@ -69,26 +87,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function register(name: string, email: string, password: string) {
     setError(null);
 
-    try {
-      const data: AuthResponse = await apiRegister(name, email, password);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
 
-      localStorage.setItem("kasa_user", JSON.stringify(data.user));
-      localStorage.setItem("kasa_token", data.token);
-
-      setUser(data.user);
-    } catch (err: unknown) {
-      if (err instanceof Error) setError(err.message);
-      else setError("Erreur lors de l'inscription");
-      throw err;
+    if (!res.ok) {
+      const err = await res.json();
+      setError(err.error || "Erreur lors de l'inscription");
+      throw new Error(err.error);
     }
+
+    await refreshUser();
   }
 
-/* -------------------------------------------------------
-   LOGOUT
--------------------------------------------------------- */
-  function logout() {
-    localStorage.removeItem("kasa_user");
-    localStorage.removeItem("kasa_token");
+  /* -------------------------------------------------------
+     LOGOUT
+  -------------------------------------------------------- */
+  async function logout() {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    localStorage.removeItem("auth_user"); 
+
     setUser(null);
     router.push("/login");
   }
@@ -102,6 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
+        refreshUser,
       }}
     >
       {children}
@@ -111,8 +137,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuthContext() {
   const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuthContext must be used within AuthProvider");
-  }
+  if (!ctx) throw new Error("useAuthContext must be used within AuthProvider");
   return ctx;
 }
