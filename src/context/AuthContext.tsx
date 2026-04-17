@@ -15,6 +15,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
+export { AuthContext };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();

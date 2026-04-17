@@ -110,6 +110,7 @@ export default function Conversation({ threadId }: Props) {
         >
           <textarea
             placeholder="Envoyer un message"
+            aria-label="Message"
             className="
               flex-1
               h-5 md:h-full     

@@ -42,7 +42,7 @@ export function ThreadItem({ thread }: ThreadItemProps) {
             {thread.otherUser.name}
           </span>
 
-          <span className="text-[10px] text-gray-dark truncate max-w-50">
+          <span className="text-[11px] text-gray-dark truncate max-w-50">
             {thread.lastMessage || "Aucun message"}
           </span>
         </div>
@@ -50,7 +50,7 @@ export function ThreadItem({ thread }: ThreadItemProps) {
 
       {/* RIGHT */}
       <div className="flex flex-col items-end">
-        <span className="text-[10px] text-gray-dark">11:04 am</span>
+        <span className="text-[11px] text-gray-dark">11:04 am</span>
 
         
           <span

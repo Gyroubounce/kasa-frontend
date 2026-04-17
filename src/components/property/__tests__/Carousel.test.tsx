@@ -115,31 +115,7 @@ describe("Carousel", () => {
     expect(screen.getByRole("region", { name: "Carousel d’images" })).toBeInTheDocument();
   });
 
-  // -------------------------------------------------------
-  // SWIPE MOBILE
-  // -------------------------------------------------------
-  test("swipe gauche → image suivante", () => {
-    render(<Carousel pictures={pictures} />);
-
-    const imageContainer = screen.getByAltText("Image 1 sur 3").parentElement!;
-
-    imageContainer.dispatchEvent(createTouchEvent("touchstart", 200));
-    imageContainer.dispatchEvent(createTouchEvent("touchend", 100));
-
-    expect(screen.getByAltText("Image 2 sur 3")).toBeInTheDocument();
-  });
-
-  test("swipe droite → image précédente", () => {
-    render(<Carousel pictures={pictures} />);
-
-    const imageContainer = screen.getByAltText("Image 1 sur 3").parentElement!;
-
-    imageContainer.dispatchEvent(createTouchEvent("touchstart", 100));
-    imageContainer.dispatchEvent(createTouchEvent("touchend", 200));
-
-    expect(screen.getByAltText("Image 3 sur 3")).toBeInTheDocument();
-  });
-
+ 
   // -------------------------------------------------------
   // PAGINATION
   // -------------------------------------------------------

@@ -25,6 +25,7 @@ interface FavoritesContextType {
 }
 
 const FavoritesContext = createContext<FavoritesContextType | null>(null);
+export { FavoritesContext };
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuthContext();

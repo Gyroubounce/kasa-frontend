@@ -22,11 +22,11 @@ export function MessageBubbleMe({ content, sender, time }: Props) {
 
         {/* Nom + heure */}
         <div className="flex items-center gap-1 mb-1">
-          <span className="text-[10px] text-gray-dark truncate max-w-30">
+          <span className="text-[11px] text-gray-dark truncate max-w-30">
             {sender.name}
           </span>
-          <span className="text-[10px] text-gray-dark">•</span>
-          <span className="text-[10px] text-gray-dark">
+          <span className="text-[11px] text-gray-dark">•</span>
+          <span className="text-[11px] text-gray-dark">
             {time || "12:45"}
           </span>
         </div>
