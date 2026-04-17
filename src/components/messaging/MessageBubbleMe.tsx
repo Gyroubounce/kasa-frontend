@@ -11,7 +11,8 @@ interface Props {
 }
 
 export function MessageBubbleMe({ content, sender, time }: Props) {
-  const avatar = sender.picture || "/img/alex.png";
+  const avatar = sender.picture?.trim() || "/images/default-avatar.png";
+
 
   return (
     <div className="flex w-full justify-end gap-2">

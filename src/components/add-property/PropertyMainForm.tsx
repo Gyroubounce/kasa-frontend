@@ -33,14 +33,16 @@ export default function PropertyMainForm() {
     const finalLocation = `${zipcode} ${formData.location}`;
 
     try {
-      const res = await fetch("/api/properties", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/properties`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
           location: finalLocation,
         }),
       });
+
 
       if (!res.ok) {
         console.error("Erreur API :", await res.text());
@@ -59,7 +61,7 @@ export default function PropertyMainForm() {
     <form
       id="property-form"
       onSubmit={handleSubmit}
-      className="w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col mt-2 lg:mt-6 gap-6 px-4 py-4 lg:px-24 lg:py-20"
+      className="w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col mt-2 lg:mt-6 gap-4 px-4 py-4 lg:px-24 lg:py-20"
       aria-labelledby="add-property-title"
     >
       {/* TITRE */}
@@ -78,7 +80,7 @@ export default function PropertyMainForm() {
           aria-required="true"
           aria-invalid="false"
           
-          className="text-[12px] text-gray-dark border border-gray-light rounded-10 px-3 lg:w-104 h-10"
+          className="text-[12px] text-gray-dark border border-gray-light rounded-[4px] px-3 lg:w-104 h-10"
         />
 
         {errors.title && (
@@ -100,7 +102,7 @@ export default function PropertyMainForm() {
           placeholder="Décrivez votre propriété en détail…"
           onChange={(e) => updateField("description", e.target.value)}
           required
-          className="text-[12px] text-gray-dark border border-gray-light rounded-10 px-3 py-2 lg:w-104 h-30"
+          className="text-[12px] text-gray-dark border border-gray-light rounded-[4px] px-3 py-2 lg:w-104 h-30"
         />
       </div>
 
@@ -119,7 +121,7 @@ export default function PropertyMainForm() {
           aria-required="true"
           aria-invalid="false"
           
-          className="border border-gray-light rounded-10 px-3 lg:w-104 h-10"
+          className="border border-gray-light rounded-[4px] px-3 lg:w-104 h-10"
         />
 
         {errors.zipcode && (
@@ -145,7 +147,7 @@ export default function PropertyMainForm() {
           aria-required="true"
           aria-invalid="false"
           
-          className="border border-gray-light rounded-10 px-3 lg:w-104 h-10"
+          className="border border-gray-light rounded-[4px] px-3 lg:w-104 h-10"
         />
 
         {errors.location && (
@@ -171,7 +173,7 @@ export default function PropertyMainForm() {
           aria-required="true"
           aria-invalid="false"
           
-          className="border border-gray-light rounded-10 px-3 lg:w-104 h-10"
+          className="border border-gray-light rounded-[4px] px-3 lg:w-104 h-10"
         />
 
         {errors.price_per_night && (

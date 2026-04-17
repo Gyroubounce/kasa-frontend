@@ -98,16 +98,22 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       );
 
       try {
-        await apiFetch(
-          `${API_URL}/api/users/${user.id}/favorites/${propertyId}`,
-          {
-            method: currentlyFavorite ? "DELETE" : "POST",
-          }
-        );
+        if (currentlyFavorite) {
+          // DELETE FAVORI
+          await apiFetch(
+            `${API_URL}/api/properties/${propertyId}/favorite`,
+            { method: "DELETE" }
+          );
+        } else {
+          // ADD FAVORI
+          await apiFetch(
+            `${API_URL}/api/properties/${propertyId}/favorite`,
+            { method: "POST" }
+          );
+        }
 
-        // Recharger les propriétés pour rester synchro
         refreshFavorites();
-      } catch (err: unknown) {
+      } catch (err) {
         // rollback
         setFavorites((prev) =>
           currentlyFavorite

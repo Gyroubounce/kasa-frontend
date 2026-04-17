@@ -23,7 +23,8 @@ function AddPropertyContent() {
   // Toujours appeler les hooks AVANT les returns conditionnels
   useEffect(() => {
     if (user?.id) {
-      updateField("host_id", user.id);
+      updateField("host_id", String(user.id));
+
     }
   }, [user, updateField]);
 
@@ -42,7 +43,7 @@ if (!loading && user && user.role !== "owner") {
     <article className="w-full flex flex-col items-center bg-light-orange py-4 gap-3">
 
       {/* RETOUR */}
-      <div className="w-97.5 md:w-3xl lg:w-292 mb-8">
+      <div className="w-97.5 md:w-3xl lg:max-w-292 lg:w-full md:ml-4 mb-8">
         <Link
           href="/"
           className="flex items-center gap-2 bg-gray-light rounded-10 px-3 h-9 text-[14px] font-medium text-gray-dark w-fit"
@@ -54,9 +55,9 @@ if (!loading && user && user.role !== "owner") {
 
       {/* HEADER + BTN AJOUTER */}
       <div className="
-        flex flex-row justify-between items-center w-97.5 md:w-3xl lg:w-292
+        flex flex-row justify-between items-center w-97.5 md:max-w-3xl md:w-full lg:max-w-292 lg:w-full 
       ">
-        <h1 id="add-property-title"className="text-[24px] font-semibold">Ajouter une propriété</h1>
+        <h1 id="add-property-title"className="text-[24px] font-semibold ml-2">Ajouter une propriété</h1>
 
         <button
           type="submit"
@@ -73,12 +74,12 @@ if (!loading && user && user.role !== "owner") {
           w-97.5 md:w-3xl lg:w-292
           flex flex-col md:flex-row 
           items-center md:items-start 
-          gap-8 lg:gap-6
-          mb-12
+          gap-3
+          mb-6
         "
       >
         <PropertyMainForm />
-         <div className="flex flex-col gap-8 w-full md:w-auto">
+         <div className="flex flex-col gap-2 lg:gap-2">
           <PropertyImages />
           <PropertyHostInfo />
         </div>
@@ -90,8 +91,8 @@ if (!loading && user && user.role !== "owner") {
           w-97.5 md:w-3xl lg:w-292
           flex flex-col md:flex-row 
           items-center md:items-start 
-          gap-8 lg:gap-6
-          mb-12
+          gap-4 
+          mb-6
         "
       >
         <PropertyEquipments />

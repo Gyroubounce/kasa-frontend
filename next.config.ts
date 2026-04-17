@@ -14,6 +14,17 @@ const nextConfig: NextConfig = {
         hostname: "s3-eu-west-1.amazonaws.com",
         pathname: "/course.oc-static.com/**",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3001",
+        pathname: "/uploads/**",
+      },
+        {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+        pathname: "/**",
+      },
     ],
   },
 };

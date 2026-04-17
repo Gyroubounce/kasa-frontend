@@ -42,93 +42,96 @@ export default function PropertyTags() {
   return (
     <section
       aria-labelledby="tags-title"
-      className=" w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 gap-4 px-4 py-8 lg:px-24 lg:py-20"
+      className=" w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 px-4 py-8 lg:px-24 lg:py-20"
     >
-      <h2 id="tags-title" className="text-[14px] font-medium text-black">
-        Tags
-      </h2>
+      <div className="w-81.5 lg:w-104 gap-2 flex flex-col">
+        <h2 id="tags-title" className="text-[14px] font-medium text-black">
+          Catégories
+        </h2>
 
-      {/* Groupe de tags */}
-      <div
-        role="group"
-        aria-labelledby="tags-title"
-        className="w-88.75 h-36 md:w-104  rounded-8 p-3 flex flex-wrap gap-2 overflow-y-auto"
-      >
-        {existingTags.map((tag) => {
-          const isSelected = selected.includes(tag);
+      
+        {/* Groupe de tags */}
+        <div
+          role="group"
+          aria-labelledby="tags-title"
+          className="w-full rounded-10 p-3 flex flex-wrap gap-2 overflow-y-auto"
+        >
+          {existingTags.map((tag) => {
+            const isSelected = selected.includes(tag);
 
-          return (
-            <button
-              key={tag}
-              type="button"
-              aria-pressed="true"
-              onClick={() => toggleTag(tag)}
-              className={`px-3 py-1 rounded-full text-[12px] border transition
-                ${
-                  isSelected
-                    ? "bg-main-red text-white border-main-red"
-                    : "bg-gray-100 text-gray-700 border-gray-300"
-                }
-              `}
-            >
-              {tag}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={tag}
+                type="button"
+                aria-pressed="true"
+                onClick={() => toggleTag(tag)}
+                className={`px-3 py-1 rounded-[5px] text-[12px] border transition
+                  ${
+                    isSelected
+                      ? "bg-main-red text-white border-main-red"
+                      : "bg-gray-100 text-gray-dark border-gray-light"
+                  }
+                `}
+              >
+                {tag}
+              </button>
+            );
+          })}
 
-        {/* Tags personnalisés déjà ajoutés */}
-        {selected
-          .filter((tag) => !existingTags.includes(tag))
-          .map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              aria-pressed="true"
-              onClick={() => toggleTag(tag)}
-              className="px-3 py-1 rounded-full text-[12px] bg-main-red text-white border border-main-red"
-            >
-              {tag}
-            </button>
-          ))}
-      </div>
-
-      {/* Ajout d’un tag personnalisé */}
-
-      <div className="flex flex-col gap-1">
-
-        <p className="text-[14px] font-medium text-black">
-          Ajouter une catégorie personnalisée 
-        </p>
-
-        <div className="flex items-center gap-3">
-          <input
-            type="text"
-            aria-label="Nouveau tag personnalisé"
-            placeholder="Nouveau tag"
-            value={customTag}
-            onChange={(e) => setCustomTag(e.target.value)}
-            className="w-70.25 lg:w-92.75 h-10 border border-gray-light rounded-8 px-3 text-[14px]"
-          />
-
-          <button
-            type="button"
-            onClick={addCustomTag}
-            aria-label="Ajouter un tag personnalisé"
-            className="w-9.25 h-9.25  text-white bg-main-red rounded-[5px] flex items-center justify-center text-[18px] font-bold hover:bg-dark-orange transition"
-          >
-            +
-          </button>
+          {/* Tags personnalisés déjà ajoutés */}
+          {selected
+            .filter((tag) => !existingTags.includes(tag))
+            .map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                aria-pressed="true"
+                onClick={() => toggleTag(tag)}
+                className="px-3 py-1 rounded-[5px] text-[12px] bg-main-red text-white border border-main-red"
+              >
+                {tag}
+              </button>
+            ))}
         </div>
 
-        {/* Bouton + Ajouter un nouveau tag */}
-          <button
-            type="button"
-            onClick={addCustomTag}
-            className="text-main-red text-[14px] font-normal cursor-pointer w-fit"
-            >
-            + Ajouter un tag
-          </button>
+        {/* Ajout d’un tag personnalisé */}
+      
+        <div className="flex flex-col gap-1">
 
+          <p className="text-[14px] font-medium text-black">
+            Ajouter une catégorie personnalisée 
+          </p>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              aria-label="Nouveau tag personnalisé"
+              placeholder="Nouveau tag"
+              value={customTag}
+              onChange={(e) => setCustomTag(e.target.value)}
+              className="w-70.25 lg:w-92.5 h-10 border border-gray-light rounded-8 text-[14px]"
+            />
+
+            <button
+              type="button"
+              onClick={addCustomTag}
+              aria-label="Ajouter un tag personnalisé"
+              className="w-9.25 h-9.25  text-white bg-main-red rounded-[5px] flex items-center justify-center text-[18px] font-bold hover:bg-dark-orange transition"
+            >
+              +
+            </button>
+          </div>
+
+          {/* Bouton + Ajouter un nouveau tag */}
+            <button
+              type="button"
+              onClick={addCustomTag}
+              className="text-main-red text-[14px] font-normal cursor-pointer w-fit"
+              >
+              + Ajouter un tag
+            </button>
+
+        </div>
       </div>
     </section>
   );

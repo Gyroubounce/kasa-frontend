@@ -9,7 +9,7 @@ interface RatingItemProps {
 
 export default function RatingItem({ rating }: RatingItemProps) {
   return (
-    <article className="flex gap-4 p-4 border rounded-[10px] bg-white shadow-sm">
+    <article className="flex gap-4 p-4 border rounded-10 bg-white shadow-sm">
       {/* Avatar */}
       <div className="w-12 h-12 relative rounded-full overflow-hidden">
         <Image

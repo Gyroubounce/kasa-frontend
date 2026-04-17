@@ -91,7 +91,8 @@ export default function Conversation({ threadId }: Props) {
         className="
           w-full 
           flex justify-center        
-          md:justify-start           
+          md:justify-start   
+          py-4        
         "
       >
         <div
@@ -101,6 +102,7 @@ export default function Conversation({ threadId }: Props) {
             border border-gray-300 
             rounded-10 
             px-3 
+            
             mt-4 
             relative 
             flex items-center        

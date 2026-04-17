@@ -11,7 +11,8 @@ interface ThreadItemProps {
 
 export function ThreadItem({ thread }: ThreadItemProps) {
   const pathname = usePathname();
-  const avatar = thread.otherUser.picture || "/default-avatar.png";
+  const avatar = thread.otherUser.picture?.trim() || "/images/default-avatar.png";
+
 
   // ✔️ Détection du thread sélectionné
   const isSelected = pathname === `/messaging/${thread.id}`;
@@ -33,6 +34,7 @@ export function ThreadItem({ thread }: ThreadItemProps) {
           className="w-11 h-11.25 rounded-[5px] object-cover"
           width={44}
           height={45}
+          unoptimized
         />
 
         <div className="flex flex-col gap-y-1">
@@ -50,7 +52,7 @@ export function ThreadItem({ thread }: ThreadItemProps) {
       <div className="flex flex-col items-end">
         <span className="text-[10px] text-gray-dark">11:04 am</span>
 
-        {thread.unread > 0 && (
+        
           <span
             className={`
               w-1.5 h-1.5 rounded-full mt-1
@@ -58,7 +60,7 @@ export function ThreadItem({ thread }: ThreadItemProps) {
             `}
           ></span>
 
-        )}
+        
       </div>
     </Link>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 
 interface CarouselProps {
@@ -8,40 +8,81 @@ interface CarouselProps {
 }
 
 export default function Carousel({ pictures }: CarouselProps) {
+  const validPictures = pictures?.filter((p) => p && p.trim() !== "") ?? [];
   const [index, setIndex] = useState(0);
 
-  // Cas : aucune image
-  if (!pictures || pictures.length === 0) {
-    return (
-      <div  data-testid="placeholder" className="w-full h-89.5 md:h-135 bg-gray-light rounded-10" />
-    );
-  }
+  const hasMultiple = validPictures.length > 1;
 
-  const hasMultiple = pictures.length > 1;
+  // Swipe mobile
+  const startX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+  const diff = startX.current - e.changedTouches[0].clientX;
+
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        next();
+      } else {
+        prev();
+      }
+    }
+
+  };
+
+
+  // Keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!hasMultiple) return;
+    if (e.key === "ArrowRight") next();
+    if (e.key === "ArrowLeft") prev();
+  };
 
   const next = () => {
-    if (!hasMultiple) return;
-    setIndex((prev) => (prev + 1) % pictures.length);
+    setIndex((prev) => (prev + 1) % validPictures.length);
   };
 
   const prev = () => {
-    if (!hasMultiple) return;
-    setIndex((prev) => (prev - 1 + pictures.length) % pictures.length);
+    setIndex((prev) => (prev - 1 + validPictures.length) % validPictures.length);
   };
 
+  if (validPictures.length === 0) {
+    return (
+      <div
+        data-testid="placeholder"
+        className="w-full h-89.5 md:h-135 bg-gray-light rounded-10"
+      />
+    );
+  }
+
   return (
-    <div className="flex flex-col md:flex-row gap-2">
+    <div
+      className="flex flex-col md:flex-row gap-2 select-none"
+      role="region"
+      aria-label="Carousel d’images"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+    >
       {/* Grande image */}
-      <div className="relative w-89.5 h-105.25 md:w-75.75 md:h-89.5 rounded-10 overflow-hidden">
+      <div
+        className="relative w-89.5 h-105.25 md:w-75.75 md:h-89.5 rounded-10 overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        aria-live="polite"
+      >
         <Image
-          src={pictures[index]}
-          alt={`Image ${index + 1}`}
+          src={validPictures[index]}
+          alt={`Image ${index + 1} sur ${validPictures.length}`}
           fill
           sizes="(max-width: 768px) 100vw, 580px"
-          className="object-cover"
+          className="object-cover object-center transition-transform duration-300 ease-out"
+          unoptimized
         />
 
-        {/* Flèches desktop */}
+        {/* Flèches (desktop) */}
         {hasMultiple && (
           <>
             <button
@@ -49,7 +90,7 @@ export default function Carousel({ pictures }: CarouselProps) {
               aria-label="Image précédente"
               className="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-light rounded-full items-center justify-center"
             >
-              <span className="text-gray-dark text-[14px] font-bold">‹</span>
+              ‹
             </button>
 
             <button
@@ -57,7 +98,7 @@ export default function Carousel({ pictures }: CarouselProps) {
               aria-label="Image suivante"
               className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-light rounded-full items-center justify-center"
             >
-              <span className="text-gray-dark text-[14px] font-bold">›</span>
+              ›
             </button>
           </>
         )}
@@ -65,47 +106,58 @@ export default function Carousel({ pictures }: CarouselProps) {
         {/* Pagination */}
         {hasMultiple && (
           <div className="absolute bottom-3 right-3 text-gray-dark text-[12px] bg-gray-light px-2 py-1 rounded">
-            {index + 1} / {pictures.length}
+            {index + 1} / {validPictures.length}
           </div>
         )}
       </div>
 
-      {/* Miniatures verticales (desktop) */}
+      {/* Miniatures desktop */}
       {hasMultiple && (
-        <div className="hidden md:grid grid-cols-2 gap-2 w-75.75 h-89.5 overflow-y-auto max-h-89.5">
-          {pictures.map((pic, i) => (
+        <div className="hidden md:grid grid-cols-2 gap-2 w-75.75 h-89.5 overflow-y-auto no-scrollbar">
+          {validPictures.map((pic, i) => (
             <button
               key={i}
-              onClick={() => setIndex(i)}
-              aria-label="Image précédente"
+              onMouseEnter={() => setIndex(i)}
+              aria-label={`Afficher l’image ${i + 1}`}
               className={`relative w-36.5 h-43.5 rounded-10 overflow-hidden border ${
                 i === index ? "border-main-red" : "border-gray-300"
               }`}
             >
-              <Image src={pic} alt={`Miniature ${i + 1}`} fill sizes="83px" className="object-cover" />
+              <Image
+                src={pic}
+                alt={`Miniature ${i + 1}`}
+                fill
+                className="object-cover object-center"
+                unoptimized
+              />
             </button>
           ))}
         </div>
-        )}
+      )}
 
-        {/* Miniatures horizontales (mobile) */}
-        {hasMultiple && (
-        <div className="md:hidden flex gap-2 overflow-x-auto max-w-89.5">
-            {pictures.map((pic, i) => (
+      {/* Miniatures mobile */}
+      {hasMultiple && (
+        <div className="md:hidden flex gap-2 overflow-x-auto no-scrollbar max-w-89.5">
+          {validPictures.map((pic, i) => (
             <button
-                key={i}
-                onClick={() => setIndex(i)}
-                aria-label="Image suivante"
-                className={`relative min-w-20.75 h-27.25 rounded-6 overflow-hidden border ${
+              key={i}
+              onClick={() => setIndex(i)}
+              aria-label={`Afficher l’image ${i + 1}`}
+              className={`relative min-w-20.75 h-27.25 rounded-6 overflow-hidden border ${
                 i === index ? "border-main-red" : "border-gray-300"
-                }`}
+              }`}
             >
-                <Image src={pic} alt={`Miniature ${i + 1}`} fill className="object-cover" />
+              <Image
+                src={pic}
+                alt={`Miniature ${i + 1}`}
+                fill
+                className="object-cover object-center"
+                unoptimized
+              />
             </button>
-            ))}
+          ))}
         </div>
-        )}
-      
+      )}
     </div>
   );
 }

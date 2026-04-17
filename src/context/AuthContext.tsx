@@ -2,14 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-interface AuthUser {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  picture?: string | null;
-}
+import type { AuthUser } from "@/types/auth";   // ⭐ On importe le vrai type global
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -30,38 +23,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  /* -------------------------------------------------------
-     REFRESH USER (appel /auth/me)
-  -------------------------------------------------------- */
   async function refreshUser() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-      credentials: "include",
-    });
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+        credentials: "include",
+      });
 
-    if (!res.ok) {
+      if (!res.ok) {
+        setUser(null);
+        return;
+      }
+
+      const data = await res.json();
+      setUser(data.user);
+    } catch {
       setUser(null);
-      return;
     }
+  }
 
-    const data = await res.json();
-    setUser(data.user);
-  } catch {
-    setUser(null);
-    }
-}
-
-    useEffect(() => {
+  useEffect(() => {
     (async () => {
       await refreshUser();
-      setLoading(false); // ✔ ici, et seulement ici
+      setLoading(false);
     })();
   }, []);
 
-
-  /* -------------------------------------------------------
-     LOGIN
-  -------------------------------------------------------- */
   async function login(email: string, password: string) {
     setError(null);
 
@@ -81,9 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refreshUser();
   }
 
-  /* -------------------------------------------------------
-     REGISTER
-  -------------------------------------------------------- */
   async function register(name: string, email: string, password: string) {
     setError(null);
 
@@ -103,17 +86,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refreshUser();
   }
 
-  /* -------------------------------------------------------
-     LOGOUT
-  -------------------------------------------------------- */
   async function logout() {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
 
-    localStorage.removeItem("auth_user"); 
-
+    localStorage.removeItem("auth_user");
     setUser(null);
     router.push("/login");
   }

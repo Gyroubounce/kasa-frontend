@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PropertyBase } from "@/types/property";
 import { useFavoritesContext } from "@/context/FavoritesContext";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/context/AuthContext";
 
 interface PropertyCardProps {
   property: PropertyBase;
@@ -12,7 +12,7 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ property }: PropertyCardProps) {
   const favoritesCtx = useFavoritesContext();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   const { favorites, isFavorite, toggle } = favoritesCtx;
   const favorite = isFavorite(String(property.id));
@@ -47,6 +47,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             loading="eager"   // ⭐ Corrige le warning LCP
             sizes="(max-width: 768px) 100vw, 355px"
             className="object-cover rounded-t-10"
+            unoptimized
           />
 
           {/* BOUTON FAVORIS */}

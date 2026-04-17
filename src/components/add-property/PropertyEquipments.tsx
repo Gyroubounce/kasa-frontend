@@ -46,7 +46,7 @@ export default function PropertyEquipments() {
   return (
     <section
       aria-labelledby="equipments-title"
-      className=" w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 gap-4 px-4 py-8 lg:px-24 lg:py-20"
+      className="w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 gap-4 px-4 py-8 lg:px-24 lg:py-20"
     >
       <h2 id="equipments-title" className="text-[14px] font-medium text-black">
         Équipements

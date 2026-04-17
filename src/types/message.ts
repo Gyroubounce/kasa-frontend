@@ -2,6 +2,7 @@
 
 import { UserPublic } from "./user";
 import { PropertyHost } from "./property";
+import { AuthUser } from "./auth";
 
 export interface Message {
   id: string;
@@ -20,6 +21,9 @@ export interface Thread {
 }
 
 export interface MessagingContextType {
+  currentUser: AuthUser | null;
+
+
   threads: Thread[];
   messages: Message[];
   unreadCount: number;

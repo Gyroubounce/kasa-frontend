@@ -29,8 +29,7 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
     if (authLoading) return;
 
     if (!user) {
-      queueMicrotask(() => setThreads([]));
-      queueMicrotask(() => setMessages([]));
+      
       return;
     }
 
@@ -241,6 +240,7 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
   -------------------------------------------------------- */
   const value = useMemo(
     () => ({
+      currentUser: user,
       threads,
       messages,
       unreadCount,
@@ -252,6 +252,7 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
       markThreadAsRead, // ⭐ ajouté ici
     }),
     [
+      user,
       threads,
       messages,
       unreadCount,
