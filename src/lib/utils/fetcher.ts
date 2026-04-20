@@ -5,10 +5,7 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   try {
-    console.log("📡 apiFetch → appel :", {
-      endpoint,
-      method: options.method || "GET",
-    });
+   
 
     const res = await fetch(endpoint, {
       ...options,
@@ -20,18 +17,18 @@ export async function apiFetch<T>(
       cache: "no-store",
     });
 
-    console.log("📥 apiFetch → réponse brute :", res.status, res.statusText);
+
 
     if (!res.ok) {
       let message = "Erreur API";
 
       try {
         const data = await res.json();
-        console.log("⚠️ apiFetch → erreur JSON :", data);
+
         message = data.error || data.message || message;
       } catch {
         const text = await res.text();
-        console.log("⚠️ apiFetch → erreur TEXT :", text);
+  
         if (text) message = text;
       }
 
@@ -39,11 +36,11 @@ export async function apiFetch<T>(
     }
 
     const json = await res.json();
-    console.log("✅ apiFetch → réponse JSON :", json);
+
 
     return json as T;
   } catch (err) {
-    console.log("💥 apiFetch → exception attrapée :", err);
+ 
 
     if (err instanceof ApiError) {
       throw err;
