@@ -6,6 +6,45 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/messaging/BackButton";
 import type { PropertyDetail } from "@/types/property";
 
+/* -------------------------------------------------------
+   METADATA DYNAMIQUE — SEO + Canonical + OpenGraph
+-------------------------------------------------------- */
+export async function generateMetadata({ params }: { params: { id: string } }) {
+ 
+     const { id } = await params; // ✔ obligatoire dans Turbopack
+
+  try {
+    const property = await getPropertyDetail(id);
+
+    return {
+      title: `${property.title} – Kasa`,
+      description: property.description,
+      alternates: {
+        canonical: `https://kasa-frontend-taupe.vercel.app/properties/${property.id}`,
+      },
+      openGraph: {
+        title: property.title,
+        description: property.description,
+        url: `https://kasa-frontend-taupe.vercel.app/properties/${property.id}`,
+        siteName: "Kasa",
+        images: property.pictures,
+        locale: "fr_FR",
+        type: "article",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: property.title,
+        description: property.description,
+        images: property.pictures,
+      },
+    };
+  } catch { 
+  
+   return null;
+  }
+}
+
+
 export default async function PropertyPage({ params }: { params: { id: string } }) {
   // ✔ Tu veux garder await → je le garde
   const { id } = await params;
@@ -19,18 +58,25 @@ export default async function PropertyPage({ params }: { params: { id: string } 
   }
 
   /* -------------------------------------------------------
-     SCHEMA.ORG DYNAMIQUE — version compatible avec ton type
+     SCHEMA.ORG DYNAMIQUE — construit AVANT le return
   -------------------------------------------------------- */
   const propertySchema = {
     "@context": "https://schema.org",
     "@type": "Apartment",
     name: property.title,
     description: property.description,
+    url: `https://kasa-frontend-taupe.vercel.app/properties/${property.id}`,
     image: property.pictures,
     address: {
       "@type": "PostalAddress",
       streetAddress: property.location,
       addressCountry: "FR",
+    },
+    offers: {
+      "@type": "Offer",
+      price: property.price_per_night,
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
     },
     aggregateRating: {
       "@type": "AggregateRating",
@@ -41,6 +87,29 @@ export default async function PropertyPage({ params }: { params: { id: string } 
       "@type": "Person",
       name: property.host.name,
       image: property.host.picture,
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Accueil",
+          item: "https://kasa-frontend-taupe.vercel.app/",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Propriétés",
+          item: "https://kasa-frontend-taupe.vercel.app/properties",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: property.title,
+          item: `https://kasa-frontend-taupe.vercel.app/properties/${property.id}`,
+        },
+      ],
     },
   };
 

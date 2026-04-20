@@ -9,8 +9,11 @@ export default function LogoutPage() {
   const { logout } = useAuthContext();
 
   useEffect(() => {
-    logout();          // supprime token + user
-    router.push("/");  // redirection après logout
+    async function run() {
+      await logout();     // <-- attendre la suppression du localStorage
+      router.push("/");   // <-- redirection APRÈS
+    }
+    run();
   }, [logout, router]);
 
   return null;
