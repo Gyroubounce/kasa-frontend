@@ -94,6 +94,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     localStorage.removeItem("auth_user");
+  // Supprimer les messages génériques
+    localStorage.removeItem("messages");
+    localStorage.removeItem("threads");
+
+    // Supprimer les messages liés à l'utilisateur courant
+    const userId = user?.id;
+    if (userId) {
+      localStorage.removeItem(`messages_${userId}`);
+      localStorage.removeItem(`threads_${userId}`);
+    }
+
     setUser(null);
     router.push("/login");
   }
