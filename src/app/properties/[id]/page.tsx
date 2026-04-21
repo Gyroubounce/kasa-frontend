@@ -60,7 +60,7 @@ export default async function PropertyPage({ params }: { params: { id: string } 
   /* -------------------------------------------------------
      SCHEMA.ORG DYNAMIQUE — construit AVANT le return
   -------------------------------------------------------- */
-  const propertySchema = {
+  const apartmentSchema = {
     "@context": "https://schema.org",
     "@type": "Apartment",
     name: property.title,
@@ -88,7 +88,10 @@ export default async function PropertyPage({ params }: { params: { id: string } 
       name: property.host.name,
       image: property.host.picture,
     },
-    breadcrumb: {
+  };
+
+  const breadcrumbSchema = {
+      "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
         {
@@ -110,16 +113,23 @@ export default async function PropertyPage({ params }: { params: { id: string } 
           item: `https://kasa-frontend-taupe.vercel.app/properties/${property.id}`,
         },
       ],
-    },
-  };
+    };
 
   return (
     <>
-      {/* SCHEMA.ORG */}
+         {/* SCHEMA.ORG — APARTMENT */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(propertySchema),
+          __html: JSON.stringify(apartmentSchema),
+        }}
+      />
+
+      {/* SCHEMA.ORG — BREADCRUMB */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema),
         }}
       />
 
