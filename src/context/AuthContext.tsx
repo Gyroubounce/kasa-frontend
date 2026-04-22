@@ -15,6 +15,16 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
 }
 
+/* -------------------------------------------------------
+   🔥 Vérifie si un cookie de session existe
+-------------------------------------------------------- */
+function hasSessionCookie() {
+  // ⚠️ Adapte le nom selon ton backend
+  return document.cookie.includes("authjs.session-token")
+      || document.cookie.includes("session")
+      || document.cookie.includes("auth_token");
+}
+
 const AuthContext = createContext<AuthContextType | null>(null);
 export { AuthContext };
 
@@ -43,8 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  useEffect(() => {
+   useEffect(() => {
     (async () => {
+      if (!hasSessionCookie()) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
       await refreshUser();
       setLoading(false);
     })();

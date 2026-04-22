@@ -72,17 +72,6 @@ export default async function PropertyPage({ params }: { params: { id: string } 
       streetAddress: property.location,
       addressCountry: "FR",
     },
-    offers: {
-      "@type": "Offer",
-      price: property.price_per_night,
-      priceCurrency: "EUR",
-      availability: "https://schema.org/InStock",
-    },
-    host: {
-      "@type": "Person",
-      name: property.host.name,
-      image: property.host.picture,
-    },
   };
 
   const breadcrumbSchema = {

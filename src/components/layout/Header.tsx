@@ -41,11 +41,11 @@ export default function Header() {
           <Image
             src={logo}
             alt="Logo Kasa"
-            width={120}
-            height={40}
+            width={163}
+            height={58}
             loading="eager"   // ⭐ Corrige le warning LCP
             priority          // ⭐ Recommandé pour le logo
-            className="w-30 h-10"
+            className="w-30 h-auto"
           />
         </div>
 
