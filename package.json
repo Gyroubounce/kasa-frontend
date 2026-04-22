@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest"
+    "test": "jest",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "next": "16.2.1",
@@ -20,6 +22,12 @@
     "@babel/preset-env": "^7.29.2",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
+    "@chromatic-com/storybook": "^5.1.2",
+    "@storybook/addon-a11y": "^10.3.5",
+    "@storybook/addon-docs": "^10.3.5",
+    "@storybook/addon-onboarding": "^10.3.5",
+    "@storybook/addon-vitest": "^10.3.5",
+    "@storybook/nextjs": "^10.3.5",
     "@tailwindcss/postcss": "^4.2.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -28,13 +36,20 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/browser-playwright": "^4.1.4",
+    "@vitest/coverage-v8": "^4.1.4",
     "babel-jest": "^30.3.0",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "eslint-plugin-storybook": "^10.3.5",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
+    "playwright": "^1.59.1",
+    "storybook": "^10.3.5",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^8.0.9",
+    "vitest": "^4.1.4"
   }
 }

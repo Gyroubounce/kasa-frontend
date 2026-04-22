@@ -8,36 +8,59 @@ import {
   PropertyUpdate 
 } from "@/types/property";
 
-/* ----------------------------------------------------
- * GET — Liste des propriétés (PropertyBase[])
- * ---------------------------------------------------- */
+/**
+ * Récupère la liste des propriétés (version allégée).
+ *
+ * @async
+ * @function getPropertyBase
+ * @returns {Promise<PropertyBase[]>} Liste des propriétés
+ * @throws {Error} Si la requête échoue
+ */
 export async function getPropertyBase(): Promise<PropertyBase[]> {
   return apiFetch<PropertyBase[]>(`${API_URL}/api/properties`);
 }
 
-/* ----------------------------------------------------
- * GET — Détail d'une propriété (PropertyDetail)
- * ---------------------------------------------------- */
+/**
+ * Récupère les détails complets d'une propriété.
+ *
+ * @async
+ * @function getPropertyDetail
+ * @param {string} id - Identifiant de la propriété
+ * @returns {Promise<PropertyDetail>} Détails complets de la propriété
+ * @throws {Error} Si la requête échoue
+ */
 export async function getPropertyDetail(id: string): Promise<PropertyDetail> {
   return apiFetch<PropertyDetail>(`${API_URL}/api/properties/${id}`);
 }
 
-/* ----------------------------------------------------
- * POST — Création d'une propriété (PropertyCreate)
- * ---------------------------------------------------- */
+/**
+ * Crée une nouvelle propriété.
+ *
+ * @async
+ * @function createProperty
+ * @param {PropertyCreate} data - Données de création de la propriété
+ * @returns {Promise<PropertyDetail>} Propriété créée
+ * @throws {Error} Si la requête échoue
+ */
 export async function createProperty(
   data: PropertyCreate
 ): Promise<PropertyDetail> {
-  return apiFetch<PropertyDetail>(`${API_URL}/api//properties`, {
+  return apiFetch<PropertyDetail>(`${API_URL}/api/properties`, {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-
-/* ----------------------------------------------------
- * PATCH — Mise à jour d'une propriété (PropertyUpdate)
- * ---------------------------------------------------- */
+/**
+ * Met à jour une propriété existante.
+ *
+ * @async
+ * @function updateProperty
+ * @param {string} id - Identifiant de la propriété
+ * @param {PropertyUpdate} data - Données à mettre à jour
+ * @returns {Promise<PropertyDetail>} Propriété mise à jour
+ * @throws {Error} Si la requête échoue
+ */
 export async function updateProperty(
   id: string,
   data: PropertyUpdate

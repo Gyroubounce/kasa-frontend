@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AuthUser } from "@/types/auth";   // ⭐ On importe le vrai type global
+import type { AuthUser } from "@/types/auth";  
+import { logoutRequest } from "@/lib/api/auth"; 
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -88,17 +89,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function logout() {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
+    await logoutRequest(); // <-- API séparée
 
+    // Nettoyage localStorage
     localStorage.removeItem("auth_user");
-  // Supprimer les messages génériques
     localStorage.removeItem("messages");
     localStorage.removeItem("threads");
 
-    // Supprimer les messages liés à l'utilisateur courant
     const userId = user?.id;
     if (userId) {
       localStorage.removeItem(`messages_${userId}`);
@@ -108,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     router.push("/login");
   }
+
 
   return (
     <AuthContext.Provider

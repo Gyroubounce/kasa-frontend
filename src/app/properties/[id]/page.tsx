@@ -1,7 +1,7 @@
 import { getPropertyDetail } from "@/lib/api/properties";
 import Carousel from "@/components/property/Carousel";
 import HostCard from "@/components/property/HostCard";
-import RatingList from "@/components/property/RatingList";
+
 import { notFound } from "next/navigation";
 import { BackButton } from "@/components/messaging/BackButton";
 import type { PropertyDetail } from "@/types/property";
@@ -62,7 +62,7 @@ export default async function PropertyPage({ params }: { params: { id: string } 
   -------------------------------------------------------- */
   const apartmentSchema = {
     "@context": "https://schema.org",
-    "@type": "Apartment",
+    "@type": "Accommodation",
     name: property.title,
     description: property.description,
     url: `https://kasa-frontend-taupe.vercel.app/properties/${property.id}`,
@@ -77,11 +77,6 @@ export default async function PropertyPage({ params }: { params: { id: string } 
       price: property.price_per_night,
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: property.rating_avg,
-      reviewCount: property.ratings_count,
     },
     host: {
       "@type": "Person",
@@ -177,9 +172,7 @@ export default async function PropertyPage({ params }: { params: { id: string } 
             ))}
           </div>
 
-          <h2 className="mt-6 text-[14px] font-medium">Avis</h2>
-          <RatingList ratings={property.ratings ?? []} />
-
+         
           <div className="md:hidden mt-8">
             <HostCard property={property} />
           </div>
