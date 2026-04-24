@@ -2,25 +2,6 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Carousel from "../Carousel";
 
-// Utilitaire pour mocker un TouchEvent compatible TypeScript sans any
-function createTouchEvent(type: string, clientX: number) {
-  const touch = {
-    identifier: 1,
-    clientX,
-    clientY: 0,
-    force: 0,
-    pageX: clientX,
-    pageY: 0,
-    radiusX: 0,
-    radiusY: 0,
-    rotationAngle: 0,
-  } as unknown as Touch;
-
-  return new TouchEvent(type, {
-    touches: [touch],
-    changedTouches: [touch],
-  });
-}
 
 const pictures = ["/img/1.jpg", "/img/2.jpg", "/img/3.jpg"];
 

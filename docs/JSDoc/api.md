@@ -375,3 +375,143 @@ ts
  * @returns {Promise<T>} Réponse JSON typée
  * @throws {ApiError} Si la requête échoue ou si le backend renvoie une erreur
  */
+7. Messaging (lib/api/messaging.ts)
+(rédigé exactement comme ton modèle apiFetch)
+
+7.1 startConversation(otherUserId, content)
+Rôle
+Démarre une conversation avec un autre utilisateur et envoie un premier message.
+
+Paramètres
+otherUserId (string) — identifiant de l’autre utilisateur
+
+content (string) — message initial
+
+Retour
+ts
+Promise<{ threadId: string }>
+Erreurs possibles
+400 : données invalides
+
+401 : utilisateur non authentifié
+
+403 : accès refusé
+
+404 : utilisateur introuvable
+
+500 : erreur serveur
+
+erreur réseau → ApiError("Erreur réseau ou serveur", 500)
+
+Exemple JSDoc
+ts
+/**
+ * Démarre une conversation avec un utilisateur (HostCard).
+ *
+ * @async
+ * @function startConversation
+ * @param {string} otherUserId - Identifiant de l'autre utilisateur
+ * @param {string} content - Message initial
+ * @returns {Promise<{ threadId: string }>}
+ * @throws {Error} Si la requête échoue
+ */
+7.2 getThreads()
+Rôle
+Récupère la liste des conversations (threads) de l’utilisateur connecté.
+
+Paramètres
+Aucun.
+
+Retour
+ts
+Promise<Thread[]>
+Erreurs possibles
+401 : utilisateur non authentifié
+
+403 : accès refusé
+
+500 : erreur serveur
+
+erreur réseau → ApiError("Erreur réseau ou serveur", 500)
+
+Exemple JSDoc
+ts
+/**
+ * Récupère la liste des threads de l'utilisateur.
+ *
+ * @async
+ * @function getThreads
+ * @returns {Promise<Thread[]>}
+ * @throws {Error} Si la requête échoue
+ */
+7.3 getMessages(threadId)
+Rôle
+Récupère tous les messages d’un thread.
+
+Paramètres
+threadId (string) — identifiant du thread
+
+Retour
+ts
+Promise<Message[]>
+Erreurs possibles
+400 : threadId invalide
+
+401 : utilisateur non authentifié
+
+403 : accès refusé
+
+404 : thread introuvable
+
+500 : erreur serveur
+
+erreur réseau → ApiError("Erreur réseau ou serveur", 500)
+
+Exemple JSDoc
+ts
+/**
+ * Récupère les messages d'un thread.
+ *
+ * @async
+ * @function getMessages
+ * @param {string} threadId - Identifiant du thread
+ * @returns {Promise<Message[]>}
+ * @throws {Error} Si la requête échoue
+ */
+7.4 sendMessage(threadId, content)
+Rôle
+Envoie un message dans un thread existant.
+
+Paramètres
+threadId (string) — identifiant du thread
+
+content (string) — contenu du message
+
+Retour
+ts
+Promise<{ ok: boolean }>
+Erreurs possibles
+400 : contenu vide ou invalide
+
+401 : utilisateur non authentifié
+
+403 : accès refusé
+
+404 : thread introuvable
+
+500 : erreur serveur
+
+erreur réseau → ApiError("Erreur réseau ou serveur", 500)
+
+Exemple JSDoc
+ts
+/**
+ * Envoie un message dans un thread.
+ *
+ * @async
+ * @function sendMessage
+ * @param {string} threadId - Identifiant du thread
+ * @param {string} content - Contenu du message
+ * @returns {Promise<{ ok: boolean }>}
+ * @throws {Error} Si la requête échoue
+ */
