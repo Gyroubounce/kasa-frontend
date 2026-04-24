@@ -42,7 +42,7 @@ NEXT_PUBLIC_ENV=development
 En production (Vercel), la variable est :
 
 Code
-NEXT_PUBLIC_API_URL=https://kasa-backend-production-1060.up.railway.app
+NEXT_PUBLIC_API_URL=https://kasa-backend-2jkk.onrender.com
 📥 Installation
 Cloner le projet :
 
