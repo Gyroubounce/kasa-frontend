@@ -17,7 +17,7 @@ export interface Thread {
   id: string;
   otherUser: UserPublic | PropertyHost;
   lastMessage: string;
-  updatedAt: string; // ⭐ indispensable pour la logique "nouveau message"
+  updatedAt: string; 
 }
 
 
@@ -26,16 +26,13 @@ export interface MessagingContextType {
   threads: Thread[];
   messages: Message[];
   unreadCount: number;
-
   getMessages: (threadId: string) => Message[];
   sendMessage: (threadId: string, content: string) => Promise<void>;
   getThreadUser: (threadId: string) => UserPublic | PropertyHost;
-
   startConversationWithHost: (
     host: UserPublic | PropertyHost,
     suggestedMessage?: string
   ) => Promise<string | undefined>;
-
 loadMessagesForThread: (threadId: string) => Promise<void>;
 
 }
