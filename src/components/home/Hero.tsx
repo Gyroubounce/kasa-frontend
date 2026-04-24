@@ -9,7 +9,7 @@ export default function Hero() {
     >
       <h1
         id="hero-title"
-        className="text-main-red text-[32px] font-semibold text-center"
+        className="text-main-red text-[32px] font-bold text-center"
       >
         Chez vous, <br className="block md:hidden" />partout et ailleurs
       </h1>

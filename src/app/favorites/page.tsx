@@ -27,15 +27,15 @@ export default function FavorisPage() {
         Prêts à réserver ? Un simple clic et votre prochain séjour est en route.
       </p>
 
-      <div className="flex flex-wrap justify-start gap-6 mt-10 max-w-88.75 lg:max-w-278.75 md:max-w-183.5 mx-auto">
+      <div className="flex flex-wrap justify-start gap-6 mt-10 mb-16 max-w-88.75 lg:max-w-278.75 md:max-w-183.5 mx-auto">
         {loading ? (
-          <p className="text-gray-500 text-center w-full">Chargement...</p>
+          <p className="text-gray-dark text-center w-full">Chargement...</p>
         ) : properties.length > 0 ? (
           properties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))
         ) : (
-          <p className="text-gray-500 text-center w-full">
+          <p className="text-gray-dark text-center w-full">
             Vous n’avez encore aucun favori.
           </p>
         )}

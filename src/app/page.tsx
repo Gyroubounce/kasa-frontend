@@ -71,7 +71,7 @@ export default function HomePage() {
 
       <Hero />
 
-      <section className="mt-16" aria-labelledby="properties-title">
+      <section className="mt-4" aria-labelledby="properties-title">
         <h2 id="properties-title" className="sr-only">
           Liste des logements disponibles
         </h2>

@@ -43,8 +43,8 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             src={property.cover}
             alt={property.title}
             fill
-            priority          // ⭐ Corrige le warning LCP
-            loading="eager"   // ⭐ Corrige le warning LCP
+            priority          
+            loading="eager"  
             sizes="(max-width: 768px) 100vw, 355px"
             className="object-cover rounded-t-10"
             unoptimized
@@ -90,14 +90,14 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               {property.title}
             </h2>
 
-            <p className="text-[14px] text-gray-700">
+            <p className="text-[14px] text-gray-dark">
               {property.location}
             </p>
           </div>
 
           <p className="text-[14px] font-medium text-black">
             {property.price_per_night}€
-            <span className="text-gray-700 font-normal"> / nuit</span>
+            <span className="text-gray-dark ml-1 font-normal"> par nuit</span>
           </p>
         </div>
 

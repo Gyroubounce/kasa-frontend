@@ -12,7 +12,7 @@ export default async function PropertyList() {
     properties = await getPropertyBase();
   } catch {
     return (
-      <p className="text-center text-main-red text-lg mt-10" role="alert">
+      <p className="text-center text-main-red text-lg mt-4" role="alert">
         Impossible de charger les logements.
       </p>
     );
@@ -20,7 +20,7 @@ export default async function PropertyList() {
 
   return (
     <section
-        className="flex flex-wrap justify-start gap-6 mt-10 max-w-88.75 lg:max-w-278.75 md:max-w-183.5 mx-auto"
+        className="flex flex-wrap justify-start gap-6 mt-6 max-w-88.75 lg:max-w-278.75 md:max-w-183.5 mx-auto"
       aria-label="Liste des logements disponibles"
     >
       {properties.map((property) => (
