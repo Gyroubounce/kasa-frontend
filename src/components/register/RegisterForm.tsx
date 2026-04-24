@@ -36,7 +36,7 @@ export default function RegisterForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 pb-2 w-full md:max-w-112.5 flex flex-col gap-5"
+      className="mt-8 pb-2 w-full max-w-81.5 md:max-w-90 flex flex-col gap-5"
     >
       {/* MESSAGE D'ERREUR */}
       {error && (

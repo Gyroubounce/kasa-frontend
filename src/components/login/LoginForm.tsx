@@ -46,7 +46,7 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 w-full max-w-112.5 flex flex-col gap-6"
+      className="mt-8 w-full max-w-81.5 md:max-w-90 flex flex-col gap-6"
     >
       {error && (
         <p className="text-red-600 text-[14px] font-medium text-center">
