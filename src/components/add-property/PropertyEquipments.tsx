@@ -58,7 +58,7 @@ export default function PropertyEquipments() {
         {/* COLONNE 1 */}
         <div className="flex flex-col gap-3">
           {equipmentsCol1.map((item) => (
-            <label key={item} className="flex items-center gap-2 text-[12px] text-gray-700">
+            <label key={item} className="flex items-center gap-2 text-[12px] text-gray-dark">
               <input
                 type="checkbox"
                 name="equipments"
@@ -75,7 +75,7 @@ export default function PropertyEquipments() {
         {/* COLONNE 2 */}
         <div className="flex flex-col gap-3">
           {equipmentsCol2.map((item) => (
-            <label key={item} className="flex items-center gap-2 text-[12px] text-gray-700">
+            <label key={item} className="flex items-center gap-2 text-[12px] text-gray-dark">
               <input
                 type="checkbox"
                 name="equipments"

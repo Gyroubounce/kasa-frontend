@@ -23,8 +23,8 @@ export default function Header() {
   const favoritesCtx = useFavoritesContext();
   const favoritesCount = favoritesCtx?.favorites.length ?? 0;
 
-  const messagingCtx = useMessaging?.();
-  const unreadCount = messagingCtx?.unreadCount ?? 0;
+  const messagingCtx = useMessaging();
+  const unreadCount = messagingCtx?.unreadCount;
 
   return (
     <header className="w-full flex justify-center md:pt-8 relative px-2 md:px-0 z-50">

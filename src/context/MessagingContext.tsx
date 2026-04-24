@@ -14,6 +14,13 @@ import { PropertyHost } from "@/types/property";
 import { Message, Thread, MessagingContextType } from "@/types/message";
 import { useAuthContext } from "@/context/AuthContext";
 
+import {
+  getThreads as apiGetThreads,
+  getMessages as apiGetMessages,
+  startConversation,
+  sendMessage as apiSendMessage,
+} from "@/lib/api/messaging";
+
 const MessagingContext = createContext<MessagingContextType | null>(null);
 
 export function MessagingProvider({ children }: { children: React.ReactNode }) {
@@ -23,150 +30,64 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
   const [messages, setMessages] = useState<Message[]>([]);
 
   /* -------------------------------------------------------
-     1) Charger les données utilisateur
+     1) Charger les threads au login
   -------------------------------------------------------- */
   useEffect(() => {
     if (authLoading) return;
 
     if (!user) {
-      
+      queueMicrotask(() => {
+        setThreads([]);
+        setMessages([]);
+      });
       return;
     }
 
-    const keyThreads = `threads_${user.id}`;
-    const keyMessages = `messages_${user.id}`;
-
-    const savedThreads = localStorage.getItem(keyThreads);
-    const savedMessages = localStorage.getItem(keyMessages);
-
-    if (!savedThreads || !savedMessages) {
-      queueMicrotask(() => setThreads([]));
-      queueMicrotask(() => setMessages([]));
-      return;
-    }
-
-    queueMicrotask(() => setThreads(JSON.parse(savedThreads)));
-    queueMicrotask(() => setMessages(JSON.parse(savedMessages)));
+    (async () => {
+      try {
+        const data = await apiGetThreads();
+        queueMicrotask(() => setThreads(data));
+      } catch (err) {
+        console.error("Failed to load threads:", err);
+        queueMicrotask(() => setThreads([]));
+      }
+    })();
   }, [user, authLoading]);
 
+
   /* -------------------------------------------------------
-     2) Sauvegarde automatique
+     3) Charger les messages d’un thread
   -------------------------------------------------------- */
-  useEffect(() => {
-    if (!user) return;
-    localStorage.setItem(`threads_${user.id}`, JSON.stringify(threads));
-  }, [threads, user]);
+  const loadMessagesForThread = useCallback(async (threadId: string) => {
+    try {
+      const data = await apiGetMessages(threadId);
 
-  useEffect(() => {
-    if (!user) return;
-    localStorage.setItem(`messages_${user.id}`, JSON.stringify(messages));
-  }, [messages, user]);
+      queueMicrotask(() => {
+        setMessages((prev) => {
+          const filtered = prev.filter((m) => m.threadId !== threadId);
+          return [...filtered, ...data];
+        });
+      });
+
+    
+    } catch (err) {
+      console.error("Failed to load messages:", err);
+    }
+  }, []);
 
   /* -------------------------------------------------------
-     3) Compteur messages non lus global
+     4) Compteur basé sur updatedAt > lastSeen
   -------------------------------------------------------- */
-  const unreadCount = useMemo(
-    () => messages.filter((m) => !m.read).length,
-    [messages]
-  );
+  const unreadCount = useMemo(() => {
+    return threads.filter((t) => {
+      const lastSeen = Number(localStorage.getItem(`lastSeen_${t.id}`) || 0);
+      const lastMessageAt = new Date(t.updatedAt).getTime();
+      return lastMessageAt > lastSeen;
+    }).length;
+  }, [threads]);
 
   /* -------------------------------------------------------
-     4) Créer un thread
-  -------------------------------------------------------- */
-  const createThread = useCallback(
-    (otherUser: UserPublic | PropertyHost) => {
-      const id = crypto.randomUUID();
-
-      const newThread: Thread = {
-        id,
-        otherUser,
-        lastMessage: "",
-        unread: 0,
-      };
-
-      setThreads((prev) => [...prev, newThread]);
-      return id;
-    },
-    []
-  );
-
-  /* -------------------------------------------------------
-     5) Construire un sender valide
-  -------------------------------------------------------- */
-  const buildSender = useCallback((): UserPublic => {
-    return {
-      id: String(user!.id),
-      name: user!.name,
-      role: user!.role,
-      picture: user!.picture ?? undefined,
-    };
-  }, [user]);
-
-  /* -------------------------------------------------------
-     6) Démarrer une conversation
-  -------------------------------------------------------- */
-  const startConversationWithHost = useCallback(
-    (host: UserPublic | PropertyHost, suggestedMessage?: string) => {
-      if (!user) return;
-
-      const existing = threads.find((t) => t.otherUser.id === host.id);
-      const sender = buildSender();
-
-      if (existing) {
-        if (suggestedMessage) {
-          const newMessage: Message = {
-            id: crypto.randomUUID(),
-            threadId: existing.id,
-            sender,
-            content: suggestedMessage,
-            createdAt: new Date().toISOString(),
-            read: false,
-          };
-
-          setMessages((prev) => [...prev, newMessage]);
-
-          setThreads((prev) =>
-            prev.map((t) =>
-              t.id === existing.id
-                ? { ...t, lastMessage: suggestedMessage, unread: t.unread + 1 }
-                : t
-            )
-          );
-        }
-
-        return existing.id;
-      }
-
-      const threadId = createThread(host);
-
-      if (suggestedMessage) {
-        const newMessage: Message = {
-          id: crypto.randomUUID(),
-          threadId,
-          sender,
-          content: suggestedMessage,
-          createdAt: new Date().toISOString(),
-          read: false,
-        };
-
-        setMessages((prev) => [...prev, newMessage]);
-
-        setThreads((prev) =>
-          prev.map((t) =>
-            t.id === threadId
-              ? { ...t, lastMessage: suggestedMessage, unread: t.unread + 1 }
-              : t
-          )
-        );
-      }
-
-      return threadId;
-    },
-    [threads, createThread, user, buildSender]
-  );
-
-  /* -------------------------------------------------------
-     7) Récupérer les messages d’un thread
+     5) Récupérer les messages d’un thread
   -------------------------------------------------------- */
   const getMessages = useCallback(
     (threadId: string) => messages.filter((m) => m.threadId === threadId),
@@ -174,7 +95,7 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
   );
 
   /* -------------------------------------------------------
-     8) Récupérer l’autre utilisateur
+     6) Récupérer l’autre utilisateur
   -------------------------------------------------------- */
   const getThreadUser = useCallback(
     (threadId: string): UserPublic | PropertyHost => {
@@ -186,57 +107,56 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
   );
 
   /* -------------------------------------------------------
-     9) Envoyer un message
+     7) Démarrer une conversation
   -------------------------------------------------------- */
-  const sendMessage = useCallback(
-    (threadId: string, content: string) => {
+  const startConversationWithHost = useCallback(
+    async (host: UserPublic | PropertyHost, suggestedMessage?: string) => {
       if (!user) return;
 
-      const sender = buildSender();
+      try {
+        const { threadId } = await startConversation(
+          String(host.id),
+          suggestedMessage ?? ""
+        );
 
-      const newMessage: Message = {
-        id: crypto.randomUUID(),
-        threadId,
-        sender,
-        content,
-        createdAt: new Date().toISOString(),
-        read: false,
-      };
+        const updatedThreads = await apiGetThreads();
+        queueMicrotask(() => setThreads(updatedThreads));
 
-      setMessages((prev) => [...prev, newMessage]);
+        await loadMessagesForThread(threadId);
 
-      setThreads((prev) =>
-        prev.map((t) =>
-          t.id === threadId
-            ? { ...t, lastMessage: content, unread: t.unread + 1 }
-            : t
-        )
-      );
+        return threadId;
+      } catch (err) {
+        console.error("Failed to start conversation:", err);
+      }
     },
-    [user, buildSender]
+    [user, loadMessagesForThread]
   );
 
   /* -------------------------------------------------------
-     🔥 10) Marquer un thread comme lu
+     8) Envoyer un message
   -------------------------------------------------------- */
-  const markThreadAsRead = useCallback((threadId: string) => {
-    // 1) Marquer les messages comme lus
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.threadId === threadId ? { ...m, read: true } : m
-      )
-    );
+  const sendMessage = useCallback(
+    async (threadId: string, content: string) => {
+      if (!user) return;
 
-    // 2) Remettre unread à 0 dans le thread
-    setThreads((prev) =>
-      prev.map((t) =>
-        t.id === threadId ? { ...t, unread: 0 } : t
-      )
-    );
-  }, []);
+      try {
+        await apiSendMessage(threadId, content);
+
+        // Recharger les messages du thread
+        await loadMessagesForThread(threadId);
+
+        // Recharger les threads pour mettre à jour updatedAt
+        const updatedThreads = await apiGetThreads();
+        queueMicrotask(() => setThreads(updatedThreads));
+      } catch (err) {
+        console.error("Failed to send message:", err);
+      }
+    },
+    [user, loadMessagesForThread]
+  );
 
   /* -------------------------------------------------------
-     11) Valeur du contexte
+     9) Valeur du contexte
   -------------------------------------------------------- */
   const value = useMemo(
     () => ({
@@ -246,10 +166,9 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
       unreadCount,
       getMessages,
       sendMessage,
-      createThread,
       getThreadUser,
       startConversationWithHost,
-      markThreadAsRead, // ⭐ ajouté ici
+      loadMessagesForThread,
     }),
     [
       user,
@@ -258,10 +177,9 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
       unreadCount,
       getMessages,
       sendMessage,
-      createThread,
       getThreadUser,
       startConversationWithHost,
-      markThreadAsRead,
+      loadMessagesForThread,
     ]
   );
 

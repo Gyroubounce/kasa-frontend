@@ -17,30 +17,25 @@ export interface Thread {
   id: string;
   otherUser: UserPublic | PropertyHost;
   lastMessage: string;
-  unread: number;
+  updatedAt: string; // ⭐ indispensable pour la logique "nouveau message"
 }
+
 
 export interface MessagingContextType {
   currentUser: AuthUser | null;
-
-
   threads: Thread[];
   messages: Message[];
   unreadCount: number;
 
   getMessages: (threadId: string) => Message[];
-
-  // ✔ NOUVELLE SIGNATURE
-  sendMessage: (threadId: string, content: string) => void;
-
-  createThread: (otherUser: UserPublic | PropertyHost) => string;
-
+  sendMessage: (threadId: string, content: string) => Promise<void>;
   getThreadUser: (threadId: string) => UserPublic | PropertyHost;
 
   startConversationWithHost: (
     host: UserPublic | PropertyHost,
     suggestedMessage?: string
-  ) => string | undefined;
+  ) => Promise<string | undefined>;
 
-  markThreadAsRead: (threadId: string) => void;
+loadMessagesForThread: (threadId: string) => Promise<void>;
+
 }

@@ -142,7 +142,7 @@ export default async function PropertyPage({ params }: { params: { id: string } 
             {property.equipments.map((eq, i) => (
               <span
                 key={i}
-                className="text-[12px] rounded-5 w-25 h-8.25 bg-gray-light text-gray-dark flex items-center justify-center"
+                className="text-[12px] rounded-[5px] w-25 h-auto bg-gray-light text-gray-dark px-3 py-1 flex items-center justify-center"
               >
                 {eq}
               </span>
@@ -154,7 +154,7 @@ export default async function PropertyPage({ params }: { params: { id: string } 
             {property.tags.map((tag, i) => (
               <span
                 key={i}
-                className="text-[12px] bg-gray-light text-gray-dark rounded-5 px-3 py-2"
+                className="text-[12px] bg-gray-light text-gray-dark rounded-[5px] px-3 py-2"
               >
                 {tag}
               </span>
