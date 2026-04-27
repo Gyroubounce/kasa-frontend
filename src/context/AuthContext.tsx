@@ -31,6 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  console.log("🔵 [AUTH] FILE LOADED");
   /* -------------------------------------------------------
      🔄 Récupère l'utilisateur via /auth/me (lib/api/auth.ts)
   -------------------------------------------------------- */
