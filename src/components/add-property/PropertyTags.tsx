@@ -42,7 +42,7 @@ export default function PropertyTags() {
   return (
     <section
       aria-labelledby="tags-title"
-      className=" w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 px-4 py-8 lg:px-24 lg:py-20"
+      className=" w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 px-4 py-6 lg:px-24 lg:py-20"
     >
       <div className="w-81.5 lg:w-104 gap-2 flex flex-col">
         <h2 id="tags-title" className="text-[14px] font-medium text-black">
@@ -54,7 +54,7 @@ export default function PropertyTags() {
         <div
           role="group"
           aria-labelledby="tags-title"
-          className="w-full rounded-10 p-3 flex flex-wrap gap-2 overflow-y-auto"
+          className="w-full rounded-10 mt-2 flex flex-wrap gap-2 overflow-y-auto"
         >
           {existingTags.map((tag) => {
             const isSelected = selected.includes(tag);

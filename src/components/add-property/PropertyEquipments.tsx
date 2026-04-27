@@ -46,7 +46,7 @@ export default function PropertyEquipments() {
   return (
     <section
       aria-labelledby="equipments-title"
-      className="w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 gap-4 px-4 py-8 lg:px-24 lg:py-20"
+      className="w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col lg:mt-1 gap-4 px-4 py-6 lg:px-24 lg:py-20"
     >
       <h2 id="equipments-title" className="text-[14px] font-medium text-black">
         Équipements
@@ -56,7 +56,7 @@ export default function PropertyEquipments() {
         <legend className="sr-only">Liste des équipements disponibles</legend>
 
         {/* COLONNE 1 */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 ml-3">
           {equipmentsCol1.map((item) => (
             <label key={item} className="flex items-center gap-2 text-[12px] text-gray-dark">
               <input
