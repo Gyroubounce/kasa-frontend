@@ -1,9 +1,15 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { AuthUser } from "@/types/auth";  
-import { logoutRequest } from "@/lib/api/auth"; 
+
+import type { AuthUser } from "@/types/auth";
+import {
+  getMe,
+  login as apiLogin,
+  register as apiRegister,
+  logoutRequest,
+} from "@/lib/api/auth";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -13,16 +19,6 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
-}
-
-/* -------------------------------------------------------
-   🔥 Vérifie si un cookie de session existe
--------------------------------------------------------- */
-function hasSessionCookie() {
-  // ⚠️ Adapte le nom selon ton backend
-  return document.cookie.includes("authjs.session-token")
-      || document.cookie.includes("session")
-      || document.cookie.includes("auth_token");
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,93 +31,113 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function refreshUser() {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-        credentials: "include",
-      });
+  console.log("🔵 [AUTH] FILE LOADED");
+  /* -------------------------------------------------------
+     🔄 Récupère l'utilisateur via /auth/me (lib/api/auth.ts)
+  -------------------------------------------------------- */
+  const refreshUser = useCallback(async () => {
+  console.log("REFRESH USER → start");
+  console.log("REFRESH USER → cookies:", document.cookie);
 
-      if (!res.ok) {
-        setUser(null);
-        return;
-      }
+  // 🚫 Si pas de cookie token → ne pas appeler /auth/me
 
-      const data = await res.json();
-      setUser(data.user);
-    } catch {
-      setUser(null);
-    }
+
+  console.log("REFRESH USER → TOKEN TROUVÉ → appel getMe()");
+
+  try {
+    const data = await getMe();
+    console.log("REFRESH USER → getMe() OK → user:", data.user);
+    setUser(data.user);
+  } catch (err) {
+    console.log("REFRESH USER → ERREUR getMe() → setUser(null)", err);
+    setUser(null);
+  } finally {
+    console.log("REFRESH USER → FIN → loading=false");
+    setLoading(false);
   }
+}, []);
 
-   useEffect(() => {
-    (async () => {
-      if (!hasSessionCookie()) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
+/* -------------------------------------------------------
+   🚀 Auto-login basé sur cookie HTTP-only
+-------------------------------------------------------- */
+useEffect(() => {
+  console.log("AUTH USEEFFECT → refreshUser()");
+  refreshUser();
+}, [refreshUser]);
 
-      await refreshUser();
-      setLoading(false);
-    })();
-  }, []);
-
+  /* -------------------------------------------------------
+     🔐 LOGIN
+  -------------------------------------------------------- */
   async function login(email: string, password: string) {
     setError(null);
+    setLoading(true);
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      setError(err.error || "Erreur lors de la connexion");
-      throw new Error(err.error);
+    try {
+      const data = await apiLogin(email, password);
+      setUser(data.user);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        throw err;
+      }
+      setError("Erreur lors de la connexion");
+      throw new Error("Erreur lors de la connexion");
+    } finally {
+      setLoading(false);
     }
-
-    await refreshUser();
   }
 
+  /* -------------------------------------------------------
+     📝 REGISTER
+  -------------------------------------------------------- */
   async function register(name: string, email: string, password: string) {
     setError(null);
+    setLoading(true);
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      setError(err.error || "Erreur lors de l'inscription");
-      throw new Error(err.error);
+    try {
+      const data = await apiRegister(name, email, password);
+      setUser(data.user);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        throw err;
+      }
+      setError("Erreur lors de l'inscription");
+      throw new Error("Erreur lors de l'inscription");
+    } finally {
+      setLoading(false);
     }
-
-    await refreshUser();
   }
 
+  /* -------------------------------------------------------
+     🚪 LOGOUT
+  -------------------------------------------------------- */
   async function logout() {
-    await logoutRequest(); // <-- API séparée
+    setLoading(true);
 
-    // Nettoyage localStorage
+    try {
+      await logoutRequest();
+    } catch {
+      // Même si le backend échoue, on force la déconnexion locale
+    }
+
+    // Nettoyage local
     localStorage.removeItem("auth_user");
     localStorage.removeItem("messages");
     localStorage.removeItem("threads");
 
-    const userId = user?.id;
-    if (userId) {
-      localStorage.removeItem(`messages_${userId}`);
-      localStorage.removeItem(`threads_${userId}`);
+    if (user?.id) {
+      localStorage.removeItem(`messages_${user.id}`);
+      localStorage.removeItem(`threads_${user.id}`);
     }
 
     setUser(null);
-    router.push("/login");
-  }
 
+    // Redirection
+    router.push("/login");
+
+    queueMicrotask(() => setLoading(false));
+  }
 
   return (
     <AuthContext.Provider
