@@ -37,12 +37,13 @@ function AddPropertyContent() {
       updateField("host_id", String(user.id));
     }
   }, [user, updateField]);
+  
 
-  // 🔥 3) Returns APRÈS les hooks
-  if (loading) return null;
-  if (!user) return null;
+  // 🔥 3) Empêche le render tant que l'auth n'est pas prête
+  if (loading || !user) return null;
   if (user.role !== "owner") return null;
 
+  
   return (
     <article className="w-full flex flex-col items-center bg-light-orange py-4 gap-3">
 

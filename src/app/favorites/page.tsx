@@ -19,10 +19,7 @@ export default function FavorisPage() {
   }, [authLoading, user, router]);
 
   // Pendant que l’auth charge → rien
-  if (authLoading) return null;
-
-  // Si pas user → on attend que useEffect redirige
-  if (!user) return null;
+  if (authLoading || !user) return null;
 
   return (
     <div className="max-w-278.75 mx-auto flex flex-col items-center">
