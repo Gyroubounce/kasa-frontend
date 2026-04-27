@@ -13,33 +13,35 @@ import PropertyImages from "@/components/add-property/PropertyImages";
 import PropertyEquipments from "@/components/add-property/PropertyEquipments";
 import PropertyTags from "@/components/add-property/PropertyTags";
 
-import backIcon from "@/../public/images/icons/back.svg"; // adapte ton chemin
+import backIcon from "@/../public/images/icons/back.svg";
 import PropertyHostInfo from "@/components/add-property/PropertyHostInfo";
 
 function AddPropertyContent() {
   const { user, loading } = useAuth();
   const { updateField } = useAddProperty();
   const router = useRouter();
-  // Toujours appeler les hooks AVANT les returns conditionnels
+
+  // 🔥 1) Redirections sécurisées (AVANT tout return)
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+    if (!loading && user && user.role !== "owner") {
+      router.push("/unauthorized");
+    }
+  }, [loading, user, router]);
+
+  // 🔥 2) Mise à jour du host_id (AVANT tout return)
   useEffect(() => {
     if (user?.id) {
       updateField("host_id", String(user.id));
-
     }
   }, [user, updateField]);
 
-  // Conditions APRÈS les hooks
+  // 🔥 3) Returns APRÈS les hooks
   if (loading) return null;
-
-  if (!user) {
-    router.push("/login");
-    return null;
-  }
-  // 🚨 AJOUT : Vérification du rôle
-if (!loading && user && user.role !== "owner") {
-  router.push("/unauthorized");
-  return null;
-}
+  if (!user) return null;
+  if (user.role !== "owner") return null;
 
   return (
     <article className="w-full flex flex-col items-center bg-light-orange py-4 gap-3">
@@ -59,7 +61,9 @@ if (!loading && user && user.role !== "owner") {
       <div className="
         flex flex-row justify-between items-center w-97.5 md:max-w-3xl md:w-full lg:max-w-292 lg:w-full 
       ">
-        <h1 id="add-property-title"className="text-[24px] font-semibold ml-2">Ajouter une propriété</h1>
+        <h1 id="add-property-title" className="text-[24px] font-semibold ml-2">
+          Ajouter une propriété
+        </h1>
 
         <button
           type="submit"
@@ -70,7 +74,7 @@ if (!loading && user && user.role !== "owner") {
         </button>
       </div>
 
-      {/* CONTAINER 1 : Main form + Images */}
+      {/* CONTAINER 1 */}
       <section 
         className="
           w-97.5 md:w-3xl lg:w-292
@@ -81,13 +85,13 @@ if (!loading && user && user.role !== "owner") {
         "
       >
         <PropertyMainForm />
-         <div className="flex flex-col gap-2 lg:gap-2">
+        <div className="flex flex-col gap-2 lg:gap-2">
           <PropertyImages />
           <PropertyHostInfo />
         </div>
       </section>
 
-      {/* CONTAINER 2 : Equipments + Tags */}
+      {/* CONTAINER 2 */}
       <section 
         className="
           w-97.5 md:w-3xl lg:w-292
@@ -102,7 +106,6 @@ if (!loading && user && user.role !== "owner") {
       </section>
 
     </article>
-
   );
 }
 

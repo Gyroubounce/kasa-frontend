@@ -4,11 +4,15 @@ import { ApiError } from "@/lib/errors/ApiError";
  * Effectue une requête HTTP avec gestion avancée des erreurs
  * et envoie automatiquement le cookie HTTP-only grâce à `credentials: "include"`.
  *
- * Cette fonction est utilisée pour toutes les requêtes API du frontend.
+ * ⚠️ IMPORTANT :
+ * - Ne PAS envoyer `Content-Type: application/json` sur les requêtes GET.
+ *   Cela déclenche un preflight CORS strict et bloque les cookies sur Vercel.
+ * - Ce fetcher corrige ce problème en appliquant `Content-Type` uniquement
+ *   sur les requêtes non-GET.
  *
+ * @template T
  * @async
  * @function apiFetch
- * @template T
  * @param {string} endpoint - URL complète de l'endpoint API
  * @param {RequestInit} [options={}] - Options fetch supplémentaires
  * @returns {Promise<T>} Réponse JSON typée
@@ -19,13 +23,18 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   try {
+    const method = options.method?.toUpperCase() || "GET";
+    const isGet = method === "GET";
+
     const res = await fetch(endpoint, {
       ...options,
-      credentials: "include", // ⭐ OBLIGATOIRE POUR ENVOYER LE COOKIE HTTP-ONLY
-      headers: {
-        "Content-Type": "application/json",
-        ...(options.headers || {}),
-      },
+      credentials: "include", // ⭐ Obligatoire pour envoyer le cookie HTTP-only
+      headers: isGet
+        ? options.headers // ❗ PAS de Content-Type sur GET
+        : {
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+          },
       cache: "no-store",
     });
 
