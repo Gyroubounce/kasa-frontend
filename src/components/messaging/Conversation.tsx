@@ -39,6 +39,8 @@ function isDifferentDay(date1: string, date2: string) {
 }
 
 export default function Conversation({ threadId }: Props) {
+  console.log("💬 [CONVERSATION] COMPONENT MOUNTED → threadId:", threadId);
+
   const { getMessages, sendMessage, loadMessagesForThread } = useMessaging();
   const { user: currentUser } = useAuthContext();
 
@@ -49,6 +51,7 @@ export default function Conversation({ threadId }: Props) {
      1) Charger les messages + marquer la dernière visite
   -------------------------------------------------------- */
   useEffect(() => {
+     console.log("💬 [CONVERSATION] useEffect → LOAD MESSAGES", threadId);
     if (!threadId) return;
 
     localStorage.setItem(`lastSeen_${threadId}`, Date.now().toString());
@@ -59,6 +62,7 @@ export default function Conversation({ threadId }: Props) {
      2) Récupération stable des messages
   -------------------------------------------------------- */
   const messages = useMemo(() => {
+      console.log("💬 [CONVERSATION] useMemo → GET MESSAGES for threadId:", threadId);
     if (!currentUser) return [];
     return getMessages(threadId);
   }, [currentUser, getMessages, threadId]);
@@ -67,6 +71,7 @@ export default function Conversation({ threadId }: Props) {
      3) Scroll automatique
   -------------------------------------------------------- */
   useEffect(() => {
+      
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
