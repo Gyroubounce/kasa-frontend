@@ -11,6 +11,10 @@ export interface AuthResponse {
   user: AuthUser;
 }
 
+export interface MeResponse {
+  user: AuthUser | null;
+}
+
 export interface PasswordResetRequestResponse {
   ok: boolean;
   message: string;

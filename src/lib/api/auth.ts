@@ -1,29 +1,42 @@
 import { API_URL } from "@/lib/env";
-import type { AuthResponse } from "@/types/auth";
+import type { AuthResponse, MeResponse } from "@/types/auth";
 
 /**
  * Récupère les informations de l'utilisateur connecté via cookie HTTP-only.
  *
  * @async
  * @function getMe
- * @returns {Promise<AuthResponse>} Les données utilisateur
- * @throws {Error} Si l'utilisateur n'est pas authentifié
+ * @returns {Promise<MeResponse>} Les données utilisateur ou null
  */
-export async function getMe(): Promise<AuthResponse> {
+export async function getMe(): Promise<MeResponse> {
+  console.log("[getMe] Appel à /auth/me…");
+
   const res = await fetch(`${API_URL}/auth/me`, {
     method: "GET",
     credentials: "include",
   });
 
+  console.log("[getMe] Status:", res.status);
+
   if (!res.ok) {
-    throw new Error("Non authentifié");
+    console.log("[getMe] Erreur → non authentifié");
+    return { user: null }; // IMPORTANT : pas d'exception ici
   }
 
-  return res.json();
+  const data = await res.json();
+  console.log("[getMe] Réponse backend:", data);
+
+  return data;
 }
 
 /**
  * Connecte un utilisateur avec email et mot de passe.
+ *
+ * @async
+ * @function login
+ * @param {string} email - Email de l'utilisateur
+ * @param {string} password - Mot de passe
+ * @returns {Promise<AuthResponse>} Token + utilisateur
  */
 export async function login(email: string, password: string): Promise<AuthResponse> {
   const res = await fetch(`${API_URL}/auth/login`, {
@@ -47,6 +60,13 @@ export async function login(email: string, password: string): Promise<AuthRespon
 
 /**
  * Inscrit un nouvel utilisateur.
+ *
+ * @async
+ * @function register
+ * @param {string} name - Nom de l'utilisateur
+ * @param {string} email - Email
+ * @param {string} password - Mot de passe
+ * @returns {Promise<AuthResponse>} Token + utilisateur
  */
 export async function register(
   name: string,
@@ -74,6 +94,10 @@ export async function register(
 
 /**
  * Déconnecte l'utilisateur.
+ *
+ * @async
+ * @function logoutRequest
+ * @returns {Promise<void>}
  */
 export async function logoutRequest(): Promise<void> {
   const res = await fetch(`${API_URL}/auth/logout`, {
