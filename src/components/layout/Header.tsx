@@ -18,13 +18,15 @@ import { useMessaging } from "@/context/MessagingContext";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+
+  // Toujours appeler les hooks
   const { user } = useAuthContext();
-
   const favoritesCtx = useFavoritesContext();
-  const favoritesCount = favoritesCtx?.favorites.length ?? 0;
-
   const messagingCtx = useMessaging();
-  const unreadCount = messagingCtx?.unreadCount;
+
+  // Mais n'utiliser leurs valeurs QUE si user existe
+  const favoritesCount = user ? favoritesCtx.favorites.length : 0;
+  const unreadCount = user ? messagingCtx.unreadCount : 0;
 
   return (
     <header className="w-full flex justify-center md:pt-8 relative px-2 md:px-0 z-50">
@@ -43,8 +45,8 @@ export default function Header() {
             alt="Logo Kasa"
             width={163}
             height={58}
-            loading="eager"   // ⭐ Corrige le warning LCP
-            priority          // ⭐ Recommandé pour le logo
+            loading="eager"
+            priority
             className="w-30 h-auto"
           />
         </div>
@@ -87,7 +89,7 @@ export default function Header() {
             alt="Kasa"
             width={60}
             height={60}
-            loading="eager"   // ⭐ Corrige le warning mobile
+            loading="eager"
             priority
             className="w-11.5 h-13.5"
           />

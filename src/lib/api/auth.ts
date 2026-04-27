@@ -2,15 +2,28 @@ import { API_URL } from "@/lib/env";
 import type { AuthResponse } from "@/types/auth";
 
 /**
- * Connecte un utilisateur avec email et mot de passe.
- * Envoie automatiquement les cookies HTTP-only grâce à `credentials: "include"`.
+ * Récupère les informations de l'utilisateur connecté via cookie HTTP-only.
  *
  * @async
- * @function login
- * @param {string} email - Email de l'utilisateur
- * @param {string} password - Mot de passe de l'utilisateur
- * @returns {Promise<AuthResponse>} Les données utilisateur renvoyées par le backend
- * @throws {Error} Si la connexion échoue ou si le backend renvoie une erreur
+ * @function getMe
+ * @returns {Promise<AuthResponse>} Les données utilisateur
+ * @throws {Error} Si l'utilisateur n'est pas authentifié
+ */
+export async function getMe(): Promise<AuthResponse> {
+  const res = await fetch(`${API_URL}/auth/me`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Non authentifié");
+  }
+
+  return res.json();
+}
+
+/**
+ * Connecte un utilisateur avec email et mot de passe.
  */
 export async function login(email: string, password: string): Promise<AuthResponse> {
   const res = await fetch(`${API_URL}/auth/login`, {
@@ -22,12 +35,10 @@ export async function login(email: string, password: string): Promise<AuthRespon
 
   if (!res.ok) {
     let errorMessage = "Erreur de connexion";
-
     try {
       const error = await res.json();
       errorMessage = error.message || errorMessage;
     } catch {}
-
     throw new Error(errorMessage);
   }
 
@@ -35,16 +46,7 @@ export async function login(email: string, password: string): Promise<AuthRespon
 }
 
 /**
- * Inscrit un nouvel utilisateur et renvoie ses informations.
- * Envoie automatiquement les cookies HTTP-only grâce à `credentials: "include"`.
- *
- * @async
- * @function register
- * @param {string} name - Nom de l'utilisateur
- * @param {string} email - Email de l'utilisateur
- * @param {string} password - Mot de passe de l'utilisateur
- * @returns {Promise<AuthResponse>} Les données utilisateur renvoyées par le backend
- * @throws {Error} Si l'inscription échoue ou si le backend renvoie une erreur
+ * Inscrit un nouvel utilisateur.
  */
 export async function register(
   name: string,
@@ -60,12 +62,10 @@ export async function register(
 
   if (!res.ok) {
     let errorMessage = "Erreur lors de l'inscription";
-
     try {
       const error = await res.json();
       errorMessage = error.message || errorMessage;
     } catch {}
-
     throw new Error(errorMessage);
   }
 
@@ -73,13 +73,7 @@ export async function register(
 }
 
 /**
- * Déconnecte l'utilisateur en appelant l'endpoint backend /auth/logout.
- * Le backend supprime le cookie HTTP-only contenant le token.
- *
- * @async
- * @function logoutRequest
- * @returns {Promise<void>}
- * @throws {Error} Si la requête échoue
+ * Déconnecte l'utilisateur.
  */
 export async function logoutRequest(): Promise<void> {
   const res = await fetch(`${API_URL}/auth/logout`, {

@@ -8,10 +8,10 @@ import {
   useCallback,
   useMemo,
 } from "react";
+import { usePathname } from "next/navigation";
 
 import { useAuthContext } from "@/context/AuthContext";
-import { apiFetch } from "@/lib/utils/fetcher";
-import { API_URL } from "@/lib/env";
+import { getFavorites, toggleFavorite } from "@/lib/api/favorites";
 import { PropertyBase } from "@/types/property";
 
 interface FavoritesContextType {
@@ -28,7 +28,8 @@ const FavoritesContext = createContext<FavoritesContextType | null>(null);
 export { FavoritesContext };
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthContext();
+  const { user, loading: authLoading } = useAuthContext();
+  const pathname = usePathname();
 
   const [favorites, setFavorites] = useState<string[]>([]);
   const [properties, setProperties] = useState<PropertyBase[]>([]);
@@ -39,40 +40,37 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
      FETCH FAVORIS + PROPRIÉTÉS
   -------------------------------------------------------- */
   const refreshFavorites = useCallback(async () => {
-    if (!user) {
-      setFavorites([]);
-      setProperties([]);
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
+    if (pathname === "/login") return;
+    if (authLoading) return;
 
     setLoading(true);
 
     try {
-      const data = await apiFetch<PropertyBase[]>(
-        `${API_URL}/api/users/${user.id}/favorites`
-      );
+      const data = await getFavorites(String(user.id));
 
-      setFavorites(data.map((p) => String(p.id)));
-      setProperties(data);
-      setError(null);
-    } catch (err: unknown) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Erreur lors du chargement des favoris"
-      );
+      queueMicrotask(() => {
+        setFavorites(data.map((p) => String(p.id)));
+        setProperties(data);
+        setError(null);
+      });
+    } catch  {
+      setError("Erreur lors du chargement des favoris");
     } finally {
-      setLoading(false);
+      queueMicrotask(() => setLoading(false));
     }
-  }, [user]);
+  }, [user, authLoading, pathname]);
 
   /* -------------------------------------------------------
      AUTO-LOAD QUAND USER CHANGE
   -------------------------------------------------------- */
   useEffect(() => {
+    if (!user) return;
+    if (pathname === "/login") return;
+    if (authLoading) return;
+
     refreshFavorites();
-  }, [user, refreshFavorites]);
+  }, [user, authLoading, refreshFavorites, pathname]);
 
   /* -------------------------------------------------------
      CHECK FAVORI
@@ -99,42 +97,21 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       );
 
       try {
-        if (currentlyFavorite) {
-          // DELETE FAVORI
-          await apiFetch(
-            `${API_URL}/api/properties/${propertyId}/favorite`,
-            { method: "DELETE" }
-          );
-        } else {
-          // ADD FAVORI
-          await apiFetch(
-            `${API_URL}/api/properties/${propertyId}/favorite`,
-            { method: "POST" }
-          );
-        }
-
+        await toggleFavorite(propertyId, currentlyFavorite);
         refreshFavorites();
-      } catch (err) {
+      } catch {
         // rollback
         setFavorites((prev) =>
           currentlyFavorite
             ? [...prev, propertyId]
             : prev.filter((id) => id !== propertyId)
         );
-
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Erreur lors de la mise à jour des favoris"
-        );
+        setError("Erreur lors de la mise à jour des favoris");
       }
     },
     [favorites, user, refreshFavorites]
   );
 
-  /* -------------------------------------------------------
-     VALUE MEMOIZÉE
-  -------------------------------------------------------- */
   const value = useMemo(
     () => ({
       favorites,
@@ -158,8 +135,6 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 export function useFavoritesContext() {
   const ctx = useContext(FavoritesContext);
   if (!ctx)
-    throw new Error(
-      "useFavoritesContext must be used within FavoritesProvider"
-    );
+    throw new Error("useFavoritesContext must be used within FavoritesProvider");
   return ctx;
 }

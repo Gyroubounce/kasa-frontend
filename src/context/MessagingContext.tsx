@@ -8,6 +8,7 @@ import {
   useMemo,
   useCallback,
 } from "react";
+import { usePathname } from "next/navigation";
 
 import { UserPublic } from "@/types/user";
 import { PropertyHost } from "@/types/property";
@@ -25,16 +26,22 @@ const MessagingContext = createContext<MessagingContextType | null>(null);
 
 export function MessagingProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuthContext();
+  const pathname = usePathname();
 
   const [threads, setThreads] = useState<Thread[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
 
   /* -------------------------------------------------------
-     1) Charger les threads au login
+     1) Charger les threads quand user change
   -------------------------------------------------------- */
   useEffect(() => {
+    // 🚫 Ne jamais charger sur /login
+    if (pathname === "/login") return;
+
+    // 🚫 Tant que l'auth charge → ne rien faire
     if (authLoading) return;
 
+    // 🚫 Si pas connecté → vider
     if (!user) {
       queueMicrotask(() => {
         setThreads([]);
@@ -52,31 +59,36 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
         queueMicrotask(() => setThreads([]));
       }
     })();
-  }, [user, authLoading]);
-
+  }, [user, authLoading, pathname]);
 
   /* -------------------------------------------------------
-     3) Charger les messages d’un thread
+     2) Charger les messages d’un thread
   -------------------------------------------------------- */
-  const loadMessagesForThread = useCallback(async (threadId: string) => {
-    try {
-      const data = await apiGetMessages(threadId);
+  const loadMessagesForThread = useCallback(
+    async (threadId: string): Promise<void> => {
+      // 🚫 Ne jamais charger sur /login
+      if (pathname === "/login") return;
 
-      queueMicrotask(() => {
-        setMessages((prev) => {
-          const filtered = prev.filter((m) => m.threadId !== threadId);
-          return [...filtered, ...data];
+      if (!user) return;
+
+      try {
+        const data = await apiGetMessages(threadId);
+
+        queueMicrotask(() => {
+          setMessages((prev) => {
+            const filtered = prev.filter((m) => m.threadId !== threadId);
+            return [...filtered, ...data];
+          });
         });
-      });
-
-    
-    } catch (err) {
-      console.error("Failed to load messages:", err);
-    }
-  }, []);
+      } catch (err) {
+        console.error("Failed to load messages:", err);
+      }
+    },
+    [user, pathname]
+  );
 
   /* -------------------------------------------------------
-     4) Compteur basé sur updatedAt > lastSeen
+     3) Compteur de non lus
   -------------------------------------------------------- */
   const unreadCount = useMemo(() => {
     return threads.filter((t) => {
@@ -87,7 +99,7 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
   }, [threads]);
 
   /* -------------------------------------------------------
-     5) Récupérer les messages d’un thread
+     4) Récupérer les messages d’un thread
   -------------------------------------------------------- */
   const getMessages = useCallback(
     (threadId: string) => messages.filter((m) => m.threadId === threadId),
@@ -95,7 +107,7 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
   );
 
   /* -------------------------------------------------------
-     6) Récupérer l’autre utilisateur
+     5) Récupérer l’autre utilisateur
   -------------------------------------------------------- */
   const getThreadUser = useCallback(
     (threadId: string): UserPublic | PropertyHost => {
@@ -107,10 +119,16 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
   );
 
   /* -------------------------------------------------------
-     7) Démarrer une conversation
+     6) Démarrer une conversation
   -------------------------------------------------------- */
   const startConversationWithHost = useCallback(
-    async (host: UserPublic | PropertyHost, suggestedMessage?: string) => {
+    async (
+      host: UserPublic | PropertyHost,
+      suggestedMessage?: string
+    ): Promise<string | undefined> => {
+      // 🚫 Ne jamais démarrer sur /login
+      if (pathname === "/login") return;
+
       if (!user) return;
 
       try {
@@ -129,37 +147,54 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
         console.error("Failed to start conversation:", err);
       }
     },
-    [user, loadMessagesForThread]
+    [user, loadMessagesForThread, pathname]
   );
 
   /* -------------------------------------------------------
-     8) Envoyer un message
+     7) Envoyer un message
   -------------------------------------------------------- */
   const sendMessage = useCallback(
-    async (threadId: string, content: string) => {
+    async (threadId: string, content: string): Promise<void> => {
+      // 🚫 Ne jamais envoyer sur /login
+      if (pathname === "/login") return;
+
       if (!user) return;
 
       try {
         await apiSendMessage(threadId, content);
 
-        // Recharger les messages du thread
         await loadMessagesForThread(threadId);
 
-        // Recharger les threads pour mettre à jour updatedAt
         const updatedThreads = await apiGetThreads();
         queueMicrotask(() => setThreads(updatedThreads));
       } catch (err) {
         console.error("Failed to send message:", err);
       }
     },
-    [user, loadMessagesForThread]
+    [user, loadMessagesForThread, pathname]
   );
 
   /* -------------------------------------------------------
-     9) Valeur du contexte
+     8) Valeur du contexte
   -------------------------------------------------------- */
-  const value = useMemo(
-    () => ({
+  const value = useMemo<MessagingContextType>(() => {
+    if (!user) {
+      return {
+        currentUser: null,
+        threads: [],
+        messages: [],
+        unreadCount: 0,
+        getMessages: () => [],
+        sendMessage: async () => {},
+        getThreadUser: () => {
+          throw new Error("Not logged in");
+        },
+        startConversationWithHost: async () => undefined,
+        loadMessagesForThread: async () => {},
+      };
+    }
+
+    return {
       currentUser: user,
       threads,
       messages,
@@ -169,19 +204,18 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
       getThreadUser,
       startConversationWithHost,
       loadMessagesForThread,
-    }),
-    [
-      user,
-      threads,
-      messages,
-      unreadCount,
-      getMessages,
-      sendMessage,
-      getThreadUser,
-      startConversationWithHost,
-      loadMessagesForThread,
-    ]
-  );
+    };
+  }, [
+    user,
+    threads,
+    messages,
+    unreadCount,
+    getMessages,
+    sendMessage,
+    getThreadUser,
+    startConversationWithHost,
+    loadMessagesForThread,
+  ]);
 
   return (
     <MessagingContext.Provider value={value}>
