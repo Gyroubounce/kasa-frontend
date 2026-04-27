@@ -1,22 +1,28 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useAuthContext } from "@/context/AuthContext";
 import { useFavoritesContext } from "@/context/FavoritesContext";
 import PropertyCard from "@/components/properties/PropertyCard";
-
 
 export default function FavorisPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuthContext();
   const { properties, loading } = useFavoritesContext();
 
+  // ⛔ IMPORTANT : ne jamais rediriger dans le render
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [authLoading, user, router]);
+
+  // Pendant que l’auth charge → rien
   if (authLoading) return null;
 
-  if (!user) {
-    router.push("/login");
-    return null;
-  }
+  // Si pas user → on attend que useEffect redirige
+  if (!user) return null;
 
   return (
     <div className="max-w-278.75 mx-auto flex flex-col items-center">
