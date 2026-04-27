@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AuthUser } from "@/types/auth";  
-import { logoutRequest } from "@/lib/api/auth"; 
+import type { AuthUser } from "@/types/auth";
+import { logoutRequest } from "@/lib/api/auth";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -19,10 +19,12 @@ interface AuthContextType {
    🔥 Vérifie si un cookie de session existe
 -------------------------------------------------------- */
 function hasSessionCookie() {
-  // ⚠️ Adapte le nom selon ton backend
-  return document.cookie.includes("authjs.session-token")
-      || document.cookie.includes("session")
-      || document.cookie.includes("auth_token");
+  return (
+    document.cookie.includes("authjs.session-token") ||
+    document.cookie.includes("session") ||
+    document.cookie.includes("auth_token") ||
+    document.cookie.includes("token")
+  );
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,6 +37,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /* -------------------------------------------------------
+     🔄 Récupère l'utilisateur via /auth/me
+  -------------------------------------------------------- */
   async function refreshUser() {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
@@ -53,7 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-   useEffect(() => {
+  /* -------------------------------------------------------
+     🚀 Auto-login si cookie présent
+  -------------------------------------------------------- */
+  useEffect(() => {
     (async () => {
       if (!hasSessionCookie()) {
         setUser(null);
@@ -66,6 +74,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
+  /* -------------------------------------------------------
+     🔐 LOGIN
+  -------------------------------------------------------- */
   async function login(email: string, password: string) {
     setError(null);
 
@@ -85,6 +96,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refreshUser();
   }
 
+  /* -------------------------------------------------------
+     📝 REGISTER
+     (gère aussi les erreurs de mot de passe sécurisé)
+  -------------------------------------------------------- */
   async function register(name: string, email: string, password: string) {
     setError(null);
 
@@ -104,10 +119,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refreshUser();
   }
 
+  /* -------------------------------------------------------
+     🚪 LOGOUT
+  -------------------------------------------------------- */
   async function logout() {
-    await logoutRequest(); // <-- API séparée
+    await logoutRequest();
 
-    // Nettoyage localStorage
     localStorage.removeItem("auth_user");
     localStorage.removeItem("messages");
     localStorage.removeItem("threads");
@@ -121,7 +138,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     router.push("/login");
   }
-
 
   return (
     <AuthContext.Provider

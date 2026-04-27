@@ -10,10 +10,32 @@ export default function RegisterForm() {
   const { register, error } = useAuthContext();
 
   const [submitting, setSubmitting] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  // 🔐 Validation frontend du mot de passe
+  function validatePassword(password: string): string | null {
+    if (password.length < 8) {
+      return "Le mot de passe doit contenir au moins 8 caractères";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "Le mot de passe doit contenir au moins une lettre majuscule";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Le mot de passe doit contenir au moins une lettre minuscule";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Le mot de passe doit contenir au moins un chiffre";
+    }
+    if (!/[!@#$%^&*]/.test(password)) {
+      return "Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)";
+    }
+    return null;
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
+    setLocalError(null);
 
     const form = e.target as HTMLFormElement;
 
@@ -22,8 +44,15 @@ export default function RegisterForm() {
     const email = (form.elements.namedItem("email") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
 
-    // Ton backend attend un champ "name"
     const fullName = `${firstname} ${lastname}`.trim();
+
+    // 🔥 Vérification du mot de passe AVANT l'appel API
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setLocalError(passwordError);
+      setSubmitting(false);
+      return;
+    }
 
     try {
       await register(fullName, email, password);
@@ -38,10 +67,10 @@ export default function RegisterForm() {
       onSubmit={handleSubmit}
       className="mt-8 pb-2 w-full max-w-81.5 md:max-w-90 flex flex-col gap-5"
     >
-      {/* MESSAGE D'ERREUR */}
-      {error && (
+      {/* MESSAGE D'ERREUR BACKEND OU FRONTEND */}
+      {(error || localError) && (
         <p className="text-red-600 text-[14px] font-medium text-center">
-          {error}
+          {localError || error}
         </p>
       )}
 
@@ -54,7 +83,6 @@ export default function RegisterForm() {
           id="lastname"
           name="lastname"
           type="text"
-          
           className="w-full h-10 border border-gray-light rounded-8 px-3 text-[14px]"
           required
         />
@@ -69,7 +97,6 @@ export default function RegisterForm() {
           id="firstname"
           name="firstname"
           type="text"
-          
           className="w-full h-10 border border-gray-light rounded-8 px-3 text-[14px]"
           required
         />
@@ -84,7 +111,6 @@ export default function RegisterForm() {
           id="email"
           name="email"
           type="email"
-          
           className="w-full h-10 border border-gray-light rounded-8 px-3 text-[14px]"
           required
         />
@@ -99,10 +125,8 @@ export default function RegisterForm() {
           id="password"
           name="password"
           type="password"
-          
           className="w-full h-10 border border-gray-light rounded-8 px-3 text-[14px]"
           required
-        
         />
       </div>
 
@@ -125,12 +149,11 @@ export default function RegisterForm() {
         </span>
       </label>
 
-
       {/* BOUTON S'INSCRIRE */}
       <button
         type="submit"
         disabled={submitting}
-        className="w-57.5 h-9 bg-main-red text-white text-[14px] font-medium rounded-10 mx-auto mt-4 hover:bg-dark-orange transition-colors disabled:opacity-50 disabled:cursor-not-allowed "
+        className="w-57.5 h-9 bg-main-red text-white text-[14px] font-medium rounded-10 mx-auto mt-4 hover:bg-dark-orange transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {submitting ? "Inscription..." : "S'inscrire"}
       </button>

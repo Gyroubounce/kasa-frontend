@@ -7,40 +7,32 @@ import { useAuthContext } from "@/context/AuthContext";
 
 export default function LoginForm() {
   const router = useRouter();
-  const { refreshUser } = useAuthContext();
+  const { login, error: backendError } = useAuthContext();
 
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    setError(null);
+    setLocalError(null);
 
     const form = e.target as HTMLFormElement;
     const email = (form.email as HTMLInputElement).value;
     const password = (form.password as HTMLInputElement).value;
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-      {
-        method: "POST",
-        credentials: "include", // IMPORTANT : cookie HTTP-only
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+    try {
+      await login(email, password);
+      router.push("/");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setLocalError(err.message);
+      } else {
+        setLocalError("Erreur inconnue");
       }
-    );
-
-    if (!res.ok) {
-      setError("Email ou mot de passe incorrect");
       setSubmitting(false);
-      return;
     }
 
-    // 🔥 IMPORTANT : recharger l'utilisateur
-    await refreshUser();
-
-    router.push("/");
   }
 
   return (
@@ -48,9 +40,9 @@ export default function LoginForm() {
       onSubmit={handleSubmit}
       className="mt-8 w-full max-w-81.5 md:max-w-90 flex flex-col gap-6"
     >
-      {error && (
+      {(localError || backendError) && (
         <p className="text-red-600 text-[14px] font-medium text-center">
-          {error}
+          {localError || backendError}
         </p>
       )}
 
@@ -63,6 +55,7 @@ export default function LoginForm() {
           name="email"
           type="email"
           className="w-full h-10 border border-gray-light rounded-lg px-3 text-[14px]"
+          required
         />
       </div>
 
@@ -75,6 +68,7 @@ export default function LoginForm() {
           name="password"
           type="password"
           className="w-full h-10 border border-gray-light rounded-lg px-3 text-[14px]"
+          required
         />
       </div>
 
