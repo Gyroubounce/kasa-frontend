@@ -35,29 +35,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
      🔄 Récupère l'utilisateur via /auth/me (lib/api/auth.ts)
   -------------------------------------------------------- */
   const refreshUser = useCallback(async () => {
-    // 🚫 Si pas de cookie token → ne pas appeler /auth/me
-    if (!document.cookie.includes("token=")) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
+  console.log("REFRESH USER → start");
+  console.log("REFRESH USER → cookies:", document.cookie);
 
-    try {
-      const data = await getMe();
-      setUser(data.user);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // 🚫 Si pas de cookie token → ne pas appeler /auth/me
+  if (!document.cookie.includes("token=")) {
+    console.log("REFRESH USER → PAS DE TOKEN → setUser(null)");
+    setUser(null);
+    setLoading(false);
+    return;
+  }
 
-  /* -------------------------------------------------------
-     🚀 Auto-login basé sur cookie HTTP-only
-  -------------------------------------------------------- */
-  useEffect(() => {
-    refreshUser();
-  }, [refreshUser]);
+  console.log("REFRESH USER → TOKEN TROUVÉ → appel getMe()");
+
+  try {
+    const data = await getMe();
+    console.log("REFRESH USER → getMe() OK → user:", data.user);
+    setUser(data.user);
+  } catch (err) {
+    console.log("REFRESH USER → ERREUR getMe() → setUser(null)", err);
+    setUser(null);
+  } finally {
+    console.log("REFRESH USER → FIN → loading=false");
+    setLoading(false);
+  }
+}, []);
+
+/* -------------------------------------------------------
+   🚀 Auto-login basé sur cookie HTTP-only
+-------------------------------------------------------- */
+useEffect(() => {
+  console.log("AUTH USEEFFECT → refreshUser()");
+  refreshUser();
+}, [refreshUser]);
 
   /* -------------------------------------------------------
      🔐 LOGIN
