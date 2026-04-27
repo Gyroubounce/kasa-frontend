@@ -9,36 +9,52 @@ import { useAuthContext } from "@/context/AuthContext";
 export default function HostCard({ property }: { property: PropertyDetail }) {
   const router = useRouter();
   const messaging = useMessaging();
-  const { user } = useAuthContext(); // ✔ Identité réelle
+  const { user, loading: authLoading } = useAuthContext();
 
-  const handleContact = () => {
-    if (!user) return;
+  const handleContact = async () => {
+    if (authLoading) return; // ⬅️ On attend AuthContext
 
-    // ✔ Empêcher de se contacter soi-même
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
     if (String(user.id) === String(property.host.id)) {
       console.warn("Impossible de se contacter soi-même.");
       return;
     }
 
     const message = `Bonjour, j’aimerais avoir quelques informations concernant votre logement (ID: ${property.id}).`;
-    const threadId = messaging.startConversationWithHost(property.host, message);
 
-    if (threadId) router.push(`/messaging/${threadId}`);
+    try {
+      const threadId = await messaging.startConversationWithHost(property.host, message);
+      router.push(`/messaging/${threadId}`);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleSendMessage = () => {
-    if (!user) return;
+  const handleSendMessage = async () => {
+    if (authLoading) return;
 
-    // ✔ Empêcher de se contacter soi-même
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
     if (String(user.id) === String(property.host.id)) {
       console.warn("Impossible de se contacter soi-même.");
       return;
     }
 
     const message = `Bonjour, je suis intéressé par votre logement (ID: ${property.id}). Est-il toujours disponible ?`;
-    const threadId = messaging.startConversationWithHost(property.host, message);
 
-    if (threadId) router.push(`/messaging/${threadId}`);
+    try {
+      const threadId = await messaging.startConversationWithHost(property.host, message);
+      router.push(`/messaging/${threadId}`);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -59,7 +75,7 @@ export default function HostCard({ property }: { property: PropertyDetail }) {
         <div className="flex flex-row items-center gap-4">
           <h4 className="text-[14px] font-medium">{property.host.name}</h4>
           <div className="flex items-center justify-center bg-gray-light rounded-10 w-12.5 h-9.75 gap-1">
-            <span className="text-main-red text-[23px]" aria-hidden="true">★</span>
+            <span className="text-main-red text-[23px]">★</span>
             <p className="text-black text-[16px] leading-none">
               {property.rating_avg}
             </p>

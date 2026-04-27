@@ -1,142 +1,137 @@
-# Documentation API (JSDoc)
+📘 Documentation API — Version complète & réécrite
+Cette documentation décrit tous les endpoints backend utilisés par ton frontend, ainsi que les comportements d’authentification, les erreurs, et les règles de sécurité.
 
-Ce document regroupe la documentation des fonctions API situées dans  
-`/src/lib/api/`.
+Elle remplace entièrement ton ancien fichier.
 
-Chaque fonction est documentée avec :
-- son rôle
-- ses paramètres
-- son retour
-- les erreurs possibles
-- le bloc JSDoc exact à placer dans le code
+0. 🔐 Principes généraux
+✔ Cookies HTTP-only
+Toutes les requêtes authentifiées utilisent un cookie :
 
----
+Code
+token=...; HttpOnly; Secure; SameSite=None
+✔ Frontend → credentials: "include"
+Toutes les fonctions API utilisent :
 
-# 1. Authentification (`auth.ts`)
+ts
+credentials: "include"
+✔ 401 → logout automatique
+Si un endpoint renvoie 401 Unauthorized, alors :
 
-## 1.1 `login(email, password)`
+AuthContext supprime l’utilisateur
 
-### Rôle
-Permet à un utilisateur de se connecter en envoyant son email et son mot de passe au backend.  
-Le backend renvoie un cookie HTTP-only contenant le token de session.
+l’app redirige vers /login via router.push()
 
-### Paramètres
-- **email** *(string)* — Email de l’utilisateur  
-- **password** *(string)* — Mot de passe de l’utilisateur  
+✔ Pages protégées
+Les pages protégées utilisent router.push(), jamais redirect().
 
-### Retour
-- **Promise<AuthResponse>**  
-  Contient :
-  - `user` (id, name, email, role…)  
-  - cookie HTTP-only automatiquement géré par le navigateur  
+1. 🔑 Authentification (auth.ts)
+1.1 login(email, password)
+Rôle
+Connecte un utilisateur et récupère un cookie HTTP-only.
 
-### Erreurs possibles
-- 400 : email ou mot de passe incorrect  
-- 500 : erreur serveur  
-- JSON d’erreur absent → message générique “Erreur de connexion”
+Paramètres
+email (string)
 
-### Exemple JSDoc
-```ts
+password (string)
+
+Retour
+Promise<AuthResponse>  
+→ { user }
+
+Erreurs
+400 : identifiants invalides
+
+500 : erreur serveur
+
+JSDoc
+ts
 /**
  * Connecte un utilisateur avec email et mot de passe.
- * Envoie automatiquement les cookies HTTP-only grâce à `credentials: "include"`.
+ * Le backend renvoie un cookie HTTP-only automatiquement géré par le navigateur.
  *
  * @async
  * @function login
  * @param {string} email - Email de l'utilisateur
  * @param {string} password - Mot de passe de l'utilisateur
- * @returns {Promise<AuthResponse>} Les données utilisateur renvoyées par le backend
- * @throws {Error} Si la connexion échoue ou si le backend renvoie une erreur
+ * @returns {Promise<AuthResponse>} Données utilisateur renvoyées par le backend
+ * @throws {Error} Si la connexion échoue
  */
 1.2 register(name, email, password)
 Rôle
-Créer un nouvel utilisateur dans la base de données et renvoyer ses informations + cookie de session.
+Crée un utilisateur + renvoie un cookie de session.
 
 Paramètres
-name (string) — Nom de l’utilisateur
+name (string)
 
-email (string) — Email de l’utilisateur
+email (string)
 
-password (string) — Mot de passe de l’utilisateur
+password (string)
 
 Retour
 Promise<AuthResponse>
 
-Erreurs possibles
+Erreurs
 400 : email déjà utilisé
 
 500 : erreur serveur
 
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Inscrit un nouvel utilisateur et renvoie ses informations.
- * Envoie automatiquement les cookies HTTP-only grâce à `credentials: "include"`.
  *
  * @async
  * @function register
  * @param {string} name - Nom de l'utilisateur
  * @param {string} email - Email de l'utilisateur
  * @param {string} password - Mot de passe de l'utilisateur
- * @returns {Promise<AuthResponse>} Les données utilisateur renvoyées par le backend
- * @throws {Error} Si l'inscription échoue ou si le backend renvoie une erreur
+ * @returns {Promise<AuthResponse>}
+ * @throws {Error} Si l'inscription échoue
  */
 1.3 logoutRequest()
 Rôle
-Déconnecte l’utilisateur en supprimant le cookie HTTP-only côté backend.
+Supprime le cookie côté backend.
 
-Exemple JSDoc
+JSDoc
 ts
 /**
- * Déconnecte l'utilisateur en appelant l'endpoint backend /auth/logout.
+ * Déconnecte l'utilisateur en appelant /auth/logout.
  *
  * @async
  * @function logoutRequest
  * @returns {Promise<void>}
  * @throws {Error} Si la requête échoue
  */
-2. Propriétés (properties.ts)
-2.1 getPropertyBase()
+1.4 /auth/me (appelé automatiquement)
 Rôle
-Récupère la liste des propriétés sous forme allégée (PropertyBase).
-
-Paramètres
-Aucun.
+Récupère l’utilisateur connecté via cookie.
 
 Retour
-Promise<PropertyBase[]>
+Promise<User>
 
-Erreurs possibles
-500 : erreur serveur
+Erreurs
+401 : token invalide → logout automatique
 
-Erreur réseau → exception Error
+2. 🏡 Propriétés (properties.ts)
+2.1 getPropertyBase()
+Rôle
+Liste allégée des propriétés.
 
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Récupère la liste des propriétés (version allégée).
  *
  * @async
  * @function getPropertyBase
- * @returns {Promise<PropertyBase[]>} Liste des propriétés
+ * @returns {Promise<PropertyBase[]>}
  * @throws {Error} Si la requête échoue
  */
 2.2 getPropertyDetail(id)
 Rôle
-Récupère les détails complets d’une propriété.
+Détails complets d’une propriété.
 
-Paramètres
-id (string) — Identifiant de la propriété
-
-Retour
-Promise<PropertyDetail>
-
-Erreurs possibles
-404 : propriété introuvable
-
-500 : erreur serveur
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Récupère les détails complets d'une propriété.
@@ -144,59 +139,29 @@ ts
  * @async
  * @function getPropertyDetail
  * @param {string} id - Identifiant de la propriété
- * @returns {Promise<PropertyDetail>} Détails complets de la propriété
+ * @returns {Promise<PropertyDetail>}
  * @throws {Error} Si la requête échoue
  */
 2.3 createProperty(data)
 Rôle
-Crée une nouvelle propriété.
+Créer une propriété (réservé aux owners).
 
-Paramètres
-data (PropertyCreate) — Données de création
-
-Retour
-Promise<PropertyDetail>
-
-Erreurs possibles
-400 : données invalides
-
-401 : utilisateur non autorisé
-
-500 : erreur serveur
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Crée une nouvelle propriété.
  *
  * @async
  * @function createProperty
- * @param {PropertyCreate} data - Données de création de la propriété
- * @returns {Promise<PropertyDetail>} Propriété créée
+ * @param {PropertyCreate} data - Données de création
+ * @returns {Promise<PropertyDetail>}
  * @throws {Error} Si la requête échoue
  */
 2.4 updateProperty(id, data)
 Rôle
-Met à jour une propriété existante.
+Mettre à jour une propriété existante.
 
-Paramètres
-id (string) — Identifiant de la propriété
-
-data (PropertyUpdate) — Données à mettre à jour
-
-Retour
-Promise<PropertyDetail>
-
-Erreurs possibles
-400 : données invalides
-
-401 : utilisateur non autorisé
-
-404 : propriété introuvable
-
-500 : erreur serveur
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Met à jour une propriété existante.
@@ -205,26 +170,15 @@ ts
  * @function updateProperty
  * @param {string} id - Identifiant de la propriété
  * @param {PropertyUpdate} data - Données à mettre à jour
- * @returns {Promise<PropertyDetail>} Propriété mise à jour
+ * @returns {Promise<PropertyDetail>}
  * @throws {Error} Si la requête échoue
  */
-3. Favoris (favorites.ts)
+3. ❤️ Favoris (favorites.ts)
 3.1 getFavorites(userId)
 Rôle
-Récupère la liste des propriétés favorites d’un utilisateur.
+Récupère les favoris de l’utilisateur.
 
-Paramètres
-userId (string) — Identifiant de l’utilisateur
-
-Retour
-Promise<Favorite[]>
-
-Erreurs possibles
-404 : utilisateur introuvable
-
-500 : erreur serveur
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Récupère la liste des favoris d'un utilisateur.
@@ -232,29 +186,19 @@ ts
  * @async
  * @function getFavorites
  * @param {string} userId - Identifiant de l'utilisateur
- * @returns {Promise<Favorite[]>} Liste des propriétés favorites
+ * @returns {Promise<Favorite[]>}
  * @throws {Error} Si la requête échoue
  */
 3.2 toggleFavorite(propertyId, isFavorite)
 Rôle
-Ajoute ou supprime une propriété des favoris.
+Ajoute ou supprime un favori.
 
-Paramètres
-propertyId (string)
+Comportement important
+Mise à jour optimiste côté client
 
-isFavorite (boolean) — indique si la propriété est déjà en favori
+Si 401 → logout → router.push("/login")
 
-Retour
-Promise<{ success: boolean }>
-
-Erreurs possibles
-401 : utilisateur non authentifié
-
-404 : propriété introuvable
-
-500 : erreur serveur
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Ajoute ou supprime une propriété des favoris de l'utilisateur.
@@ -263,32 +207,15 @@ ts
  * @function toggleFavorite
  * @param {string} propertyId - Identifiant de la propriété
  * @param {boolean} isFavorite - Indique si la propriété est déjà en favori
- * @returns {Promise<{ success: boolean }>} Résultat de l'opération
+ * @returns {Promise<{ success: boolean }>}
  * @throws {Error} Si la requête échoue
  */
-4. Notes (ratings.ts)
+4. ⭐ Notes (ratings.ts)
 4.1 rateProperty(propertyId, payload)
 Rôle
-Crée ou met à jour une note pour une propriété.
+Créer ou mettre à jour une note.
 
-Paramètres
-propertyId (string)
-
-payload (RatingCreate) — { score: number, userId: string }
-
-Retour
-Promise<Rating>
-
-Erreurs possibles
-400 : score invalide
-
-401 : utilisateur non authentifié
-
-404 : propriété introuvable
-
-500 : erreur serveur
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Crée ou met à jour une note pour une propriété.
@@ -296,33 +223,15 @@ ts
  * @async
  * @function rateProperty
  * @param {string} propertyId - Identifiant de la propriété
- * @param {RatingCreate} payload - Données de notation (score, userId)
- * @returns {Promise<Rating>} Note créée ou mise à jour
+ * @param {RatingCreate} payload - Données de notation
+ * @returns {Promise<Rating>}
  * @throws {Error} Si la requête échoue
  */
-5. fetchWithAuth (fetchWithAuth.ts)
-5.1 fetchWithAuth(endpoint, options)
+5. 🔒 fetchWithAuth
 Rôle
-Effectue une requête HTTP authentifiée en envoyant automatiquement le cookie HTTP-only.
+Effectue une requête authentifiée.
 
-Paramètres
-endpoint (string)
-
-options (RequestInit)
-
-Retour
-Promise<any>
-
-Erreurs possibles
-401 : utilisateur non authentifié
-
-403 : accès refusé
-
-404 : endpoint introuvable
-
-500 : erreur serveur
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Effectue une requête HTTP authentifiée en envoyant automatiquement
@@ -332,81 +241,35 @@ ts
  * @function fetchWithAuth
  * @param {string} endpoint - Chemin de l'endpoint API
  * @param {RequestInit} [options={}] - Options fetch supplémentaires
- * @returns {Promise<any>} Réponse JSON du backend
+ * @returns {Promise<any>}
  * @throws {Error} Si la requête échoue
  */
-6. apiFetch (utils/fetcher.ts)
-6.1 apiFetch(endpoint, options)
+6. 🌐 apiFetch
 Rôle
-Effectue une requête HTTP avec gestion avancée des erreurs.
+Gestion avancée des erreurs + cookies.
 
-Paramètres
-endpoint (string)
-
-options (RequestInit)
-
-Retour
-Promise<T>
-
-Erreurs possibles
-400 : données invalides
-
-401 : utilisateur non authentifié
-
-403 : accès refusé
-
-404 : endpoint introuvable
-
-500 : erreur serveur
-
-erreur réseau → ApiError("Erreur réseau ou serveur", 500)
-
-Exemple JSDoc
+JSDoc
 ts
 /**
- * Effectue une requête HTTP avec gestion avancée des erreurs
- * et envoie automatiquement le cookie HTTP-only grâce à `credentials: "include"`.
+ * Effectue une requête HTTP avec gestion avancée des erreurs.
  *
  * @async
  * @function apiFetch
  * @template T
  * @param {string} endpoint - URL complète de l'endpoint API
  * @param {RequestInit} [options={}] - Options fetch supplémentaires
- * @returns {Promise<T>} Réponse JSON typée
- * @throws {ApiError} Si la requête échoue ou si le backend renvoie une erreur
+ * @returns {Promise<T>}
+ * @throws {ApiError} Si la requête échoue
  */
-7. Messaging (lib/api/messaging.ts)
-(rédigé exactement comme ton modèle apiFetch)
-
+7. 💬 Messagerie (messaging.ts)
 7.1 startConversation(otherUserId, content)
 Rôle
-Démarre une conversation avec un autre utilisateur et envoie un premier message.
+Démarre une conversation + premier message.
 
-Paramètres
-otherUserId (string) — identifiant de l’autre utilisateur
-
-content (string) — message initial
-
-Retour
-ts
-Promise<{ threadId: string }>
-Erreurs possibles
-400 : données invalides
-
-401 : utilisateur non authentifié
-
-403 : accès refusé
-
-404 : utilisateur introuvable
-
-500 : erreur serveur
-
-erreur réseau → ApiError("Erreur réseau ou serveur", 500)
-
-Exemple JSDoc
+JSDoc
 ts
 /**
- * Démarre une conversation avec un utilisateur (HostCard).
+ * Démarre une conversation avec un utilisateur.
  *
  * @async
  * @function startConversation
@@ -417,24 +280,9 @@ ts
  */
 7.2 getThreads()
 Rôle
-Récupère la liste des conversations (threads) de l’utilisateur connecté.
+Liste des conversations.
 
-Paramètres
-Aucun.
-
-Retour
-ts
-Promise<Thread[]>
-Erreurs possibles
-401 : utilisateur non authentifié
-
-403 : accès refusé
-
-500 : erreur serveur
-
-erreur réseau → ApiError("Erreur réseau ou serveur", 500)
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Récupère la liste des threads de l'utilisateur.
@@ -446,28 +294,9 @@ ts
  */
 7.3 getMessages(threadId)
 Rôle
-Récupère tous les messages d’un thread.
+Messages d’un thread.
 
-Paramètres
-threadId (string) — identifiant du thread
-
-Retour
-ts
-Promise<Message[]>
-Erreurs possibles
-400 : threadId invalide
-
-401 : utilisateur non authentifié
-
-403 : accès refusé
-
-404 : thread introuvable
-
-500 : erreur serveur
-
-erreur réseau → ApiError("Erreur réseau ou serveur", 500)
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Récupère les messages d'un thread.
@@ -480,30 +309,9 @@ ts
  */
 7.4 sendMessage(threadId, content)
 Rôle
-Envoie un message dans un thread existant.
+Envoie un message dans un thread.
 
-Paramètres
-threadId (string) — identifiant du thread
-
-content (string) — contenu du message
-
-Retour
-ts
-Promise<{ ok: boolean }>
-Erreurs possibles
-400 : contenu vide ou invalide
-
-401 : utilisateur non authentifié
-
-403 : accès refusé
-
-404 : thread introuvable
-
-500 : erreur serveur
-
-erreur réseau → ApiError("Erreur réseau ou serveur", 500)
-
-Exemple JSDoc
+JSDoc
 ts
 /**
  * Envoie un message dans un thread.

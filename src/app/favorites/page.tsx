@@ -1,18 +1,21 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
 import { useFavoritesContext } from "@/context/FavoritesContext";
 import PropertyCard from "@/components/properties/PropertyCard";
 
+
 export default function FavorisPage() {
+  const router = useRouter();
   const { user, loading: authLoading } = useAuthContext();
   const { properties, loading } = useFavoritesContext();
 
   if (authLoading) return null;
 
   if (!user) {
-    redirect("/login");
+    router.push("/login");
+    return null;
   }
 
   return (

@@ -94,7 +94,7 @@ components/
 ├─ properties/
 ├─ property/
 ├─ register/
-└─ ui/
+
 
 Code
 
@@ -110,7 +110,7 @@ Code
 | messaging | UI du système de messagerie |
 | properties | Composants génériques des propriétés |
 | property | Composants spécifiques à la page détail |
-| ui | Design system (Button, Card, Input, Spinner…) |
+
 
 ### Tests intégrés
 
@@ -180,7 +180,6 @@ Code
 Structure réelle :
 
 lib/
-├─ constants.ts
 ├─ env.ts
 │
 ├─ api/
@@ -195,8 +194,8 @@ lib/
 │
 └─ utils/
 ├─ fetcher.ts
-├─ formatLocation.ts
-└─ formatPrice.ts
+
+
 
 Code
 
@@ -240,22 +239,7 @@ Chaque fichier définit les types utilisés dans les API et les composants.
 
 ---
 
-# 8. Dossier `/mocks`
-
-mocks/
-└─ mockMessaging.ts
-
-Code
-
-Utilisé pour :
-
-- tests
-- développement local
-- prévisualisation Storybook
-
----
-
-# 9. Communication Frontend ↔ Backend
+# 8. Communication Frontend ↔ Backend
 
 Le frontend utilise :
 
@@ -277,7 +261,7 @@ Code
 
 ---
 
-# 10. Authentification
+# 9. Authentification
 
 Le projet utilise :
 
@@ -287,7 +271,7 @@ Le projet utilise :
 
 ---
 
-# 11. Sécurité
+# 10. Sécurité
 
 - Cookies HTTP-only
 - Pas de token dans localStorage
@@ -297,7 +281,7 @@ Le projet utilise :
 
 ---
 
-# 12. Résumé de l’architecture
+# 11. Résumé de l’architecture
 
 Utilisateur
 ↓
@@ -319,7 +303,7 @@ Code
 
 ---
 
-# 13. Conclusion
+# 12. Conclusion
 
 Cette architecture est :
 

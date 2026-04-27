@@ -138,7 +138,7 @@ export default async function PropertyPage({ params }: { params: { id: string } 
           <p className="mt-7 text-[14px]">{property.description}</p>
 
           <h2 className="mt-8 text-[14px] font-medium">Équipements</h2>
-          <div className="grid grid-cols-3 gap-2 w-79 mt-5">
+          <div className="grid grid-cols-3 gap-2 w-79 mt-4">
             {property.equipments.map((eq, i) => (
               <span
                 key={i}
@@ -150,7 +150,7 @@ export default async function PropertyPage({ params }: { params: { id: string } 
           </div>
 
           <h2 className="mt-6 text-[14px] font-medium">Catégorie</h2>
-          <div className="flex gap-2 mt-2">
+          <div className="flex gap-2 mt-4">
             {property.tags.map((tag, i) => (
               <span
                 key={i}

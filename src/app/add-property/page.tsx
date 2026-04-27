@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -19,7 +19,7 @@ import PropertyHostInfo from "@/components/add-property/PropertyHostInfo";
 function AddPropertyContent() {
   const { user, loading } = useAuth();
   const { updateField } = useAddProperty();
-
+  const router = useRouter();
   // Toujours appeler les hooks AVANT les returns conditionnels
   useEffect(() => {
     if (user?.id) {
@@ -32,11 +32,13 @@ function AddPropertyContent() {
   if (loading) return null;
 
   if (!user) {
-    redirect("/login");
+    router.push("/login");
+    return null;
   }
   // 🚨 AJOUT : Vérification du rôle
 if (!loading && user && user.role !== "owner") {
-  redirect("/unauthorized");
+  router.push("/unauthorized");
+  return null;
 }
 
   return (
