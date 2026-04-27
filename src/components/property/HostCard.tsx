@@ -34,28 +34,40 @@ export default function HostCard({ property }: { property: PropertyDetail }) {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (authLoading) return;
+const handleSendMessage = async () => {
+  console.log("🟦 HANDLE SEND MESSAGE → CLICK");
 
-    if (!user) {
-      router.push("/login");
-      return;
-    }
+  if (authLoading) {
+    console.log("🟨 HANDLE SEND MESSAGE → authLoading TRUE → STOP");
+    return;
+  }
 
-    if (String(user.id) === String(property.host.id)) {
-      console.warn("Impossible de se contacter soi-même.");
-      return;
-    }
+  if (!user) {
+    console.log("🟥 HANDLE SEND MESSAGE → NO USER → REDIRECT LOGIN");
+    router.push("/login");
+    return;
+  }
 
-    const message = `Bonjour, je suis intéressé par votre logement (ID: ${property.id}). Est-il toujours disponible ?`;
+  if (String(user.id) === String(property.host.id)) {
+    console.warn("🟧 HANDLE SEND MESSAGE → SELF MESSAGE BLOCKED");
+    return;
+  }
 
-    try {
-      const threadId = await messaging.startConversationWithHost(property.host, message);
-      router.push(`/messaging/${threadId}`);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const message = `Bonjour, je suis intéressé par votre logement (ID: ${property.id}). Est-il toujours disponible ?`;
+
+  try {
+    console.log("🟦 HANDLE SEND MESSAGE → BEFORE startConversationWithHost");
+    const threadId = await messaging.startConversationWithHost(property.host, message);
+    console.log("🟩 HANDLE SEND MESSAGE → AFTER startConversationWithHost → threadId:", threadId);
+
+    console.log("🟦 HANDLE SEND MESSAGE → BEFORE router.push");
+    router.push(`/messaging/${threadId}`);
+    console.log("🟩 HANDLE SEND MESSAGE → AFTER router.push");
+
+  } catch (err) {
+    console.error("🟥 HANDLE SEND MESSAGE → ERROR", err);
+  }
+};
 
   return (
     <div className="w-86.25 h-70.25 border border-gray-light rounded-10 p-4 bg-white">

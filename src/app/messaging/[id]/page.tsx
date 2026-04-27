@@ -1,5 +1,8 @@
 "use client";
 
+console.log("📨 CONVERSATION PAGE → MONTAGE");
+
+
 import { useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuthContext } from "@/context/AuthContext";
@@ -26,8 +29,11 @@ export default function ConversationPage() {
 
   // On attend que l'auth soit chargée
   if (authLoading || !user) return null;
+  console.log("📨 CONVERSATION PAGE → RENDER");
+
 
   return (
+    
     <article className="flex w-full max-w-97.5 md:max-w-264.75 gap-6 h-[calc(100vh-250px)] mt-8">
 
       {/* LEFT COLUMN — always rendered, hidden on mobile */}
