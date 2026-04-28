@@ -1,7 +1,5 @@
 "use client";
 
-console.log("📨 CONVERSATION PAGE → MONTAGE");
-
 
 import { useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
@@ -29,7 +27,7 @@ export default function ConversationPage() {
 
   // On attend que l'auth soit chargée
   if (authLoading || !user) return null;
-  console.log("📨 CONVERSATION PAGE → RENDER");
+
 
 
   return (

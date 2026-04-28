@@ -9,22 +9,22 @@ import type { AuthResponse, MeResponse } from "@/types/auth";
  * @returns {Promise<MeResponse>} Les données utilisateur ou null
  */
 export async function getMe(): Promise<MeResponse> {
-  console.log("[getMe] Appel à /auth/me…");
+
 
   const res = await fetch(`${API_URL}/auth/me`, {
     method: "GET",
     credentials: "include",
   });
 
-  console.log("[getMe] Status:", res.status);
+
 
   if (!res.ok) {
-    console.log("[getMe] Erreur → non authentifié");
+   
     return { user: null }; // IMPORTANT : pas d'exception ici
   }
 
   const data = await res.json();
-  console.log("[getMe] Réponse backend:", data);
+ 
 
   return data;
 }
