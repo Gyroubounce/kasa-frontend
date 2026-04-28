@@ -8,21 +8,18 @@ import PropertyCard from "@/components/properties/PropertyCard";
 
 export default function FavorisPage() {
   const router = useRouter();
-  const { user} = useAuthContext();
+  const { user, loading: authLoading } = useAuthContext();
   const { properties, loading } = useFavoritesContext();
 
   // ⛔ IMPORTANT : ne jamais rediriger dans le render
-   // Si user === null → redirection
   useEffect(() => {
-    if (user === null) {
+    if (!authLoading && !user) {
       router.push("/login");
     }
-  }, [user, router]);
+  }, [authLoading, user, router]);
 
-  // Si user est undefined → AuthContext charge encore → on affiche la page vide
-  if (user === undefined) {
-    return null;
-  }
+  // Pendant que l’auth charge → rien
+  if (authLoading || !user) return null;
 
   return (
     <div className="max-w-278.75 mx-auto flex flex-col items-center">
