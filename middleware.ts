@@ -1,30 +1,25 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+// middleware.ts
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export function middleware(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
-  const path = req.nextUrl.pathname;
-
-  console.log("🟦 [MIDDLEWARE] PATH:", path);
-  console.log("🟦 [MIDDLEWARE] TOKEN:", token);
-
-  const protectedRoutes = ["/favorites", "/add-property", "/messaging"];
-
-  const isProtected = protectedRoutes.some((route) =>
-    path.startsWith(route)
-  );
-
-  console.log("🟦 [MIDDLEWARE] isProtected:", isProtected);
-
-  if (isProtected && !token) {
-    console.log("❌ [MIDDLEWARE] NO TOKEN → REDIRECT /login");
-    return NextResponse.redirect(new URL("/login", req.url));
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  
+  // Protection uniquement pour add-property
+  if (pathname.startsWith('/add-property')) {
+    const token = request.cookies.get('auth-token')?.value
+    
+    if (!token) {
+      // Redirection vers login avec return URL
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('returnUrl', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
   }
-
-  console.log("🟩 [MIDDLEWARE] ACCESS GRANTED → NEXT()");
-  return NextResponse.next();
+  
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/favorites/:path*", "/add-property/:path*", "/messaging/:path*"],
-};
+  matcher: '/add-property/:path*',
+}
