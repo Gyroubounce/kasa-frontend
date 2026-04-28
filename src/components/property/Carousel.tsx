@@ -73,10 +73,12 @@ export default function Carousel({ pictures }: CarouselProps) {
         onTouchEnd={handleTouchEnd}
         aria-live="polite"
       >
-        <Image
+         <Image
           src={validPictures[index]}
           alt={`Image ${index + 1} sur ${validPictures.length}`}
           fill
+          priority={index === 0}
+          loading={index === 0 ? "eager" : "lazy"}
           sizes="(max-width: 768px) 100vw, 580px"
           className="object-cover object-center transition-transform duration-300 ease-out"
           unoptimized
@@ -123,13 +125,15 @@ export default function Carousel({ pictures }: CarouselProps) {
                 i === index ? "border-main-red" : "border-gray-300"
               }`}
             >
-              <Image
+               <Image
                 src={pic}
                 alt={`Miniature ${i + 1}`}
                 fill
+                sizes="150px"
                 className="object-cover object-center"
                 unoptimized
               />
+            
             </button>
           ))}
         </div>
@@ -151,6 +155,7 @@ export default function Carousel({ pictures }: CarouselProps) {
                 src={pic}
                 alt={`Miniature ${i + 1}`}
                 fill
+                sizes="100px"
                 className="object-cover object-center"
                 unoptimized
               />
