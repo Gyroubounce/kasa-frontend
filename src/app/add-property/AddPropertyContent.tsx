@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { AddPropertyProvider, useAddProperty } from "@/context/AddPropertyContext";
+import { useAuthContext } from "@/context/AuthContext";
 
 import PropertyMainForm from "@/components/add-property/PropertyMainForm";
 import PropertyImages from "@/components/add-property/PropertyImages";
@@ -14,18 +16,36 @@ import PropertyHostInfo from "@/components/add-property/PropertyHostInfo";
 
 import backIcon from "@/../public/images/icons/back.svg";
 
-import type { AuthUser } from "@/types/auth";
-type User = AuthUser;
-
-function AddPropertyContentInner({ user }: { user: User }) {
+function AddPropertyContentInner() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuthContext();
   const { updateField } = useAddProperty();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  // 🔥 Protection accès (login + owner)
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    if (user.role !== "owner") {
+      router.push("/unauthorized");
+      return;
+    }
+  }, [authLoading, user, router]);
+
+  // 🔥 Injecter host_id (toujours AVANT le return)
   useEffect(() => {
     if (user?.id) {
       updateField("host_id", String(user.id));
     }
   }, [user, updateField]);
+
+  // ⛔ return conditionnel APRÈS tous les hooks
+  if (authLoading || !user || user.role !== "owner") return null;
 
   return (
     <article className="w-full flex flex-col items-center bg-light-orange py-4 gap-3">
@@ -94,11 +114,10 @@ function AddPropertyContentInner({ user }: { user: User }) {
   );
 }
 
-
-export default function AddPropertyContent({ user }: { user: User }) {
+export default function AddPropertyContent() {
   return (
     <AddPropertyProvider>
-      <AddPropertyContentInner user={user} />
+      <AddPropertyContentInner />
     </AddPropertyProvider>
   );
 }
