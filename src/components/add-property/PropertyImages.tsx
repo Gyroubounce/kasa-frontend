@@ -6,7 +6,12 @@ import { useUpload } from "@/hooks/useUpload";
 import { useAddProperty } from "@/context/AddPropertyContext";
 import { UploadResponse } from "@/types/UploadResponse";
 
-export default function PropertyImages() {
+export default function PropertyImages({
+  errors,
+}: {
+  errors: { [key: string]: string };
+}) {
+
   const { formData, updateField } = useAddProperty();
   const { uploadFile, loading, error } = useUpload();
 
@@ -112,8 +117,14 @@ export default function PropertyImages() {
               >
               +
             </button>
-
           </div>
+
+            {/* 🔥 Erreur cover */}
+          {errors.cover && (
+            <p className="text-red-500 text-[12px]" aria-live="assertive">
+              {errors.cover}
+            </p>
+          )}
 
           {/* Preview cover */}
           {formData.cover && (
@@ -171,8 +182,14 @@ export default function PropertyImages() {
             >
               +
             </button>
-
           </div>
+
+          {/* 🔥 Erreur pictures */}
+          {errors.pictures && (
+            <p className="text-red-500 text-[12px]" aria-live="assertive">
+              {errors.pictures}
+            </p>
+          )}
 
           {/* Liste des images ajoutées */}
           <div className="flex flex-wrap gap-3">

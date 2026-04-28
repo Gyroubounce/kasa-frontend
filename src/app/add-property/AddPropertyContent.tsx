@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -19,6 +19,7 @@ type User = AuthUser;
 
 function AddPropertyContentInner({ user }: { user: User }) {
   const { updateField } = useAddProperty();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (user?.id) {
@@ -57,7 +58,7 @@ function AddPropertyContentInner({ user }: { user: User }) {
         </button>
       </div>
 
-      {/* CONTAINER 1 : Main form + Images */}
+      {/* CONTAINER 1 */}
       <section 
         className="
           w-97.5 md:w-3xl lg:w-292
@@ -67,14 +68,15 @@ function AddPropertyContentInner({ user }: { user: User }) {
           mb-6
         "
       >
-        <PropertyMainForm />
+        <PropertyMainForm onErrorsChange={setErrors} />
+
         <div className="flex flex-col gap-2 lg:gap-2">
-          <PropertyImages />
+          <PropertyImages errors={errors} />
           <PropertyHostInfo />
         </div>
       </section>
 
-      {/* CONTAINER 2 : Equipments + Tags */}
+      {/* CONTAINER 2 */}
       <section 
         className="
           w-97.5 md:w-3xl lg:w-292
@@ -84,13 +86,14 @@ function AddPropertyContentInner({ user }: { user: User }) {
           mb-6
         "
       >
-        <PropertyEquipments />
-        <PropertyTags />
+        <PropertyEquipments errors={errors} />
+        <PropertyTags errors={errors} />
       </section>
 
     </article>
   );
 }
+
 
 export default function AddPropertyContent({ user }: { user: User }) {
   return (

@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAddProperty } from "@/context/AddPropertyContext";
 
-export default function PropertyEquipments() {
-  const [selected, setSelected] = useState<string[]>([]);
+export default function PropertyEquipments({
+  errors,
+}: {
+  errors: { [key: string]: string };
+}) {
+  const { formData, updateField } = useAddProperty();
+  const [selected, setSelected] = useState<string[]>(formData.equipments || []);
 
   const equipmentsCol1 = [
     "Micro-Ondes",
@@ -42,6 +48,11 @@ export default function PropertyEquipments() {
         : [...prev, equipment]
     );
   }
+
+  // 🔥 Sync local state → global formData
+  useEffect(() => {
+    updateField("equipments", selected);
+  }, [selected, updateField]);
 
   return (
     <section
@@ -89,6 +100,13 @@ export default function PropertyEquipments() {
           ))}
         </div>
       </fieldset>
+
+      {/* 🔥 Affichage de l’erreur */}
+      {errors.equipments && (
+        <p className="text-red-500 text-[12px]" aria-live="assertive">
+          {errors.equipments}
+        </p>
+      )}
 
       <p id="equipments-help" className="sr-only">
         Sélectionnez les équipements présents dans votre logement.

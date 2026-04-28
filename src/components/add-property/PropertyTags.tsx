@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAddProperty } from "@/context/AddPropertyContext";
 
-export default function PropertyTags() {
-  // Tags existants (tu pourras les remplacer par ceux venant du backend)
+export default function PropertyTags({
+  errors,
+}: {
+  errors: { [key: string]: string };
+}) {
+  const { formData, updateField } = useAddProperty();
+
   const existingTags = [
     "Parc",
     "Night Life",
@@ -19,7 +25,7 @@ export default function PropertyTags() {
     "Calme",
   ];
 
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>(formData.tags || []);
   const [customTag, setCustomTag] = useState("");
 
   function toggleTag(tag: string) {
@@ -39,6 +45,11 @@ export default function PropertyTags() {
     setCustomTag("");
   }
 
+  // 🔥 Sync local → global formData
+  useEffect(() => {
+    updateField("tags", selected);
+  }, [selected, updateField]);
+
   return (
     <section
       aria-labelledby="tags-title"
@@ -49,7 +60,6 @@ export default function PropertyTags() {
           Catégories
         </h2>
 
-      
         {/* Groupe de tags */}
         <div
           role="group"
@@ -78,7 +88,7 @@ export default function PropertyTags() {
             );
           })}
 
-          {/* Tags personnalisés déjà ajoutés */}
+          {/* Tags personnalisés */}
           {selected
             .filter((tag) => !existingTags.includes(tag))
             .map((tag) => (
@@ -95,9 +105,7 @@ export default function PropertyTags() {
         </div>
 
         {/* Ajout d’un tag personnalisé */}
-      
         <div className="flex flex-col gap-1">
-
           <p className="text-[14px] font-medium text-black">
             Ajouter une catégorie personnalisée 
           </p>
@@ -122,15 +130,20 @@ export default function PropertyTags() {
             </button>
           </div>
 
-          {/* Bouton + Ajouter un nouveau tag */}
-            <button
-              type="button"
-              onClick={addCustomTag}
-              className="text-main-red text-[14px] font-normal cursor-pointer w-fit"
-              >
-              + Ajouter un tag
-            </button>
+          <button
+            type="button"
+            onClick={addCustomTag}
+            className="text-main-red text-[14px] font-normal cursor-pointer w-fit"
+          >
+            + Ajouter un tag
+          </button>
 
+          {/* 🔥 Affichage de l’erreur */}
+          {errors.tags && (
+            <p className="text-red-500 text-[12px]" aria-live="assertive">
+              {errors.tags}
+            </p>
+          )}
         </div>
       </div>
     </section>

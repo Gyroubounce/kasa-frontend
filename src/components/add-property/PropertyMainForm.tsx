@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAddProperty } from "@/context/AddPropertyContext";
 
-export default function PropertyMainForm() {
+export default function PropertyMainForm({
+  onErrorsChange,
+}: {
+  onErrorsChange: (errors: { [key: string]: string }) => void;
+}) {
+
   const router = useRouter();
   const { formData, updateField } = useAddProperty();
   const [zipcode, setZipcode] = useState("");
@@ -15,13 +20,29 @@ export default function PropertyMainForm() {
     const newErrors: { [key: string]: string } = {};
 
     if (!formData.title.trim()) newErrors.title = "Le titre est obligatoire.";
+    if (!formData.description?.trim())
+    newErrors.description = "La description est obligatoire.";
+
     if (!formData.price_per_night || formData.price_per_night <= 0)
       newErrors.price_per_night = "Le prix doit être supérieur à 0.";
     if (!formData.location.trim())
       newErrors.location = "La localisation est obligatoire.";
     if (!zipcode.trim()) newErrors.zipcode = "Le code postal est obligatoire.";
+    if (!formData.cover?.trim())
+    newErrors.cover = "Une photo de couverture est obligatoire.";
+    if (!formData.cover?.trim())
+   newErrors.cover = "Une photo de couverture est obligatoire.";
+    if (!formData.pictures || formData.pictures.length === 0)
+      newErrors.pictures = "Veuillez ajouter au moins une photo.";
+    if (!formData.equipments || formData.equipments.length === 0)
+   newErrors.equipments = "Veuillez sélectionner au moins un équipement.";
+
+    if (!formData.tags || formData.tags.length === 0)
+   newErrors.tags = "Veuillez sélectionner au moins une catégorie.";
+
 
     setErrors(newErrors);
+    onErrorsChange(newErrors); 
     return Object.keys(newErrors).length === 0;
   }
 
@@ -49,8 +70,10 @@ export default function PropertyMainForm() {
         return;
       }
 
-      const created = await res.json();
-      router.push(`/property/${created.slug}`);
+      await res.json();
+
+      router.push(`/`);
+
     } catch (err) {
       console.error("Erreur lors de la création :", err);
     }
@@ -61,6 +84,9 @@ export default function PropertyMainForm() {
     <form
       id="property-form"
       onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+    if (e.key === "Enter") e.preventDefault();
+  }}
       className="w-88.75 lg:w-xl border border-gray-light bg-white flex flex-col mt-2 lg:mt-6 gap-4 px-4 py-4 lg:px-24 lg:py-20"
       aria-labelledby="add-property-title"
     >
@@ -104,6 +130,13 @@ export default function PropertyMainForm() {
           required
           className="text-[12px] text-gray-dark border border-gray-light rounded-[4px] px-3 py-2 lg:w-104 h-30"
         />
+
+        {errors.description && (
+          <p className="text-red-500 text-[12px]" aria-live="assertive">
+            {errors.description}
+          </p>
+        )}
+
       </div>
 
       {/* CODE POSTAL */}
