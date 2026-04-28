@@ -40,7 +40,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   console.log("REFRESH USER → cookies:", document.cookie);
 
   // 🚫 Si pas de cookie token → ne pas appeler /auth/me
-
+ const hasAuthCookie = document.cookie.includes("auth-token=");
+  if (!hasAuthCookie) {
+    console.log("REFRESH USER → aucun cookie auth-token → user=null");
+    setUser(null);
+    setLoading(false);
+    return;
+  }
 
   console.log("REFRESH USER → TOKEN TROUVÉ → appel getMe()");
 
