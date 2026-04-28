@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   
   // Protection uniquement pour add-property
   if (pathname.startsWith('/add-property')) {
-    const token = request.cookies.get('auth-token')?.value
+    const token = request.cookies.get('token')?.value
     
     if (!token) {
       // Redirection vers login avec return URL
