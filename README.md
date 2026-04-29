@@ -1,65 +1,69 @@
-Frontend Kasa (Next.js 14)
-📌 Description du projet
-Ce projet est le frontend de l’application Kasa, développé avec Next.js 14 (App Router).
-Il permet aux utilisateurs de :
+# Frontend Kasa (Next.js 14)
 
-consulter la liste des logements
+## 📌 Description du projet
 
-afficher la fiche détaillée d’un logement
+Ce projet est le frontend de l'application Kasa, développé avec **Next.js 14** (App Router).
 
-gérer leurs favoris
+### Fonctionnalités principales :
 
-s’authentifier (inscription, connexion, déconnexion)
+- 🏠 Consulter la liste des logements
+- 📋 Afficher la fiche détaillée d'un logement
+- ❤️ Gérer leurs favoris
+- 🔐 S'authentifier (inscription, connexion, déconnexion)
+- 💬 Accéder à un module de messagerie (conversations + messages)
+- ➕ Ajouter un logement via un formulaire complet
+- 📱 Naviguer dans une interface responsive et moderne
 
-accéder à un module de messagerie (conversations + messages)
+Le frontend communique avec une API externe via la variable d'environnement `NEXT_PUBLIC_API_URL`.
 
-ajouter un logement via un formulaire complet
+**Déployé sur Vercel :** https://kasa-frontend-taupe.vercel.app/
 
-naviguer dans une interface responsive et moderne
+## 🛠 Pré-requis pour l'installation
 
-Le frontend communique avec une API externe via la variable d’environnement NEXT_PUBLIC_API_URL.
+Avant d'installer le projet, assure-toi d'avoir :
 
-Le projet est déployé sur Vercel :
-👉 https://kasa-frontend-taupe.vercel.app/
+- **Node.js** ≥ 18
+- **npm**, yarn, pnpm ou bun
+- Une API backend accessible (locale ou en ligne)
 
-🛠 Pré‑requis pour l’installation
-Avant d’installer le projet, assure‑toi d’avoir :
+### Configuration de l'environnement
 
-Node.js ≥ 18
+Crée un fichier `.env.local` à la racine du projet :
 
-npm, yarn, pnpm ou bun
-
-Une API backend accessible (locale ou en ligne)
-
-Créer un fichier .env.local à la racine du projet :
-
-Code
-# URL de l’API backend locale
+```env
+# URL de l'API backend locale
 NEXT_PUBLIC_API_URL=http://localhost:3001
 
 # Mode de l'application
 NEXT_PUBLIC_ENV=development
+```
 En production (Vercel), la variable est :
 
-Code
+```env
 NEXT_PUBLIC_API_URL=https://kasa-backend-2jkk.onrender.com
-📥 Installation
-Cloner le projet :
+```
+## 📥 Installation
 
-bash
+1. **Cloner le projet :**
+
+```bash
 git clone https://github.com/Gyroubounce/kasa-frontend.git
 cd kasa-frontend
-Installer les dépendances :
+```
 
-bash
+2. **Installer les dépendances :**
+
+```bash
 npm install
-🚀 Lancement du projet
+```
+## 🚀 Lancement du projet
+
 Démarrer le serveur de développement :
 
-bash
+```bash
 npm run dev
-Le frontend sera accessible sur :
+```
 
-👉 http://localhost:3000
+Le frontend sera accessible sur : **http://localhost:3000**
 
-(Ton backend local tourne sur http://localhost:3001)
+> 💡 Ton backend local doit tourner sur **http://localhost:3001**
