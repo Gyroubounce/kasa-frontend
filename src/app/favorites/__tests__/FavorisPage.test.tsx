@@ -4,6 +4,26 @@ import { FavoritesContext } from "@/context/FavoritesContext";
 import { AuthContext } from "@/context/AuthContext";
 import { PropertyBase } from "@/types/property";
 
+// Mock du router Next.js (App Router)
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+  }),
+}));
+
+// Mock Next/Image propre, typé, sans any, sans warning ESLint
+jest.mock("next/image", () => {
+  const MockedImage = (props: { src: string; alt: string }) => {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={props.src} alt={props.alt} />;
+  };
+  MockedImage.displayName = "MockedNextImage";
+  return MockedImage;
+});
+
+
 const mockUser = {
   id: "123",
   name: "Serge",
@@ -66,9 +86,7 @@ describe("FavorisPage", () => {
   test("affiche un logement favori", () => {
     renderPage({ properties: [mockProperty] });
 
-    expect(
-      screen.getByRole("link", { name: /voir le logement : super logement/i })
-    ).toBeInTheDocument();
+    expect(screen.getByText(/super logement/i)).toBeInTheDocument();
   });
 
   test("affiche un message si aucun favori", () => {

@@ -2,6 +2,15 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Carousel from "../Carousel";
 
+// Mock Next/Image propre, typé, sans warning ESLint
+jest.mock("next/image", () => {
+  const MockedImage = (props: { src: string; alt: string }) => {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={props.src} alt={props.alt} />;
+  };
+  MockedImage.displayName = "MockedNextImage";
+  return MockedImage;
+});
 
 const pictures = ["/img/1.jpg", "/img/2.jpg", "/img/3.jpg"];
 
@@ -96,7 +105,6 @@ describe("Carousel", () => {
     expect(screen.getByRole("region", { name: "Carousel d’images" })).toBeInTheDocument();
   });
 
- 
   // -------------------------------------------------------
   // PAGINATION
   // -------------------------------------------------------
